@@ -7,7 +7,7 @@ A 2D game featuring two visual themes (day and night) and two game modes (rhythm
 
 ## Game Modes
 
-###Rhythm Mode 
+### Rhythm Mode 
 
 * The player chooses a melody to play during the level.
 * It features a system for "caught" and "missed" notes.
