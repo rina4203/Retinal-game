@@ -849,7 +849,7 @@ class Game:
         return self._high_score
 
     def _load_fonts(self):
-        FONT_FILE = "Moonscape Demo.otf"
+        FONT_FILE = "font.otf"
         try:
             self.FONT_BIG = pygame.font.Font(FONT_FILE, 70)
             self.FONT_MEDIUM = pygame.font.Font(FONT_FILE, 40)
