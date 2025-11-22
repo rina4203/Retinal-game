@@ -4,32 +4,32 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import random
 import math
+import json
 from abc import ABC, abstractmethod
 from typing import List, TypeVar, Generic, Optional
 
 # --- ШЛЯХИ ДО ФАЙЛІВ ---
 SOUND_FOLDER = "sound"
 HIGHSCORE_FILE = "highscore.txt"
-
-# --- НАЛАШТУВАННЯ ПІСЕНЬ (RHYTHM MODE) ---
-SONG_LIST = [
-    {
-        "name": "My Track",       
-        "file": "song.mp3",       
-        "bpm": 120,               
-        "offset": 0.0,            
-        "difficulty": "Custom"
-    }
-]
+NOTES_FILE = "notes.json"
 
 pygame.init()
 
 # --- КОНСТАНТИ ---
 WIDTH, HEIGHT = 500, 800
 FPS = 60
-MAX_PLATFORM_SPEED = 14
+MAX_PLATFORM_SPEED = 16
 NUM_BG_STARS = 200
-MAX_MISSED_STARS = 10
+MAX_MISSED_STARS = 3 
+
+# Глобальний список назв пісень
+SONG_NAMES_MAP = {
+    "1": "Twinkle Twinkle",
+    "2": "Happy Birthday",
+    "3": "Jan Gan Man",
+    "4": "O Mere Dil Ke",
+    "5": "Naruto Theme"
+}
 
 # Зони для ритм гри
 LANE_WIDTH = WIDTH // 3
@@ -275,13 +275,17 @@ class Basket(GameObject):
         pygame.draw.rect(surface, color, self.get_rect(), border_radius=5)
 
 class Star(GameObject):
-    def __init__(self, speed_multiplier, fixed_x=None):
+    def __init__(self, speed_multiplier, fixed_x=None, note_name=None):
         if fixed_x is not None:
             self._x = fixed_x
+            self._x += random.randint(-15, 15)
+            self._x = clamp(self._x, 20, WIDTH - 20)
             self._is_rhythm_note = True
+            self.note_name = note_name 
         else:
             self._x = random.randint(100, WIDTH - 100)
             self._is_rhythm_note = False
+            self.note_name = None
             
         self._y = random.randint(-200, -20)
         self._z = random.uniform(0.1, 1.0)
@@ -292,9 +296,8 @@ class Star(GameObject):
         self._blink_timer = random.uniform(0, 2 * math.pi)
         self._blink_speed = random.uniform(1.0, 3.0)
         
-        # Шлейф для комети
         self._trail = [] 
-        self._max_trail_length = 15 
+        self._max_trail_length = 10
         
         if theme_mgr.current_theme == "light":
             self._specific_color = random.choice(theme_mgr.light_theme_star_colors)
@@ -315,15 +318,17 @@ class Star(GameObject):
         self._y = y
 
     def update(self, dt, **kwargs):
+        speed = kwargs.get("speed", 0) 
         speed_multiplier = kwargs.get("speed_multiplier", 1.0)
+
         if self._is_rhythm_note:
-             self._vel = 5 * speed_multiplier
+             self._vel = speed 
         else:
              self._vel = self._base_speed * speed_multiplier
+        
         self._y += self._vel
         self._blink_timer += self._blink_speed * dt
 
-        # Оновлення хвоста (шлейфу)
         if self._is_rhythm_note:
             self._trail.append((self._x, self._y))
             if len(self._trail) > self._max_trail_length:
@@ -340,7 +345,6 @@ class Star(GameObject):
         p = clamp((math.sin(self._blink_timer) * 0.5 + 0.5), 0, 1)
         current_size = self._base_size * (0.7 + p * 0.6)
         
-        # Визначаємо кольори
         if theme_mgr.current_theme == "light":
             base_color = self._specific_color
             halo_color = (255, 255, 255)
@@ -348,7 +352,6 @@ class Star(GameObject):
             base_color = PASTEL_PEACH
             halo_color = PASTEL_CREAM
 
-        # --- МАЛЮВАННЯ ХВОСТА КОМЕТИ (ТІЛЬКИ ДЛЯ РИТМ-РЕЖИМУ) ---
         if self._is_rhythm_note and len(self._trail) > 1:
             for i, (tx, ty) in enumerate(self._trail):
                 alpha = int(150 * (i / len(self._trail)))
@@ -359,16 +362,12 @@ class Star(GameObject):
                 pygame.draw.circle(s_trail, (*base_color, alpha), (t_size, t_size), t_size)
                 surface.blit(s_trail, (tx - t_size, ty - t_size))
 
-        # --- МАЛЮВАННЯ ГОЛОВИ ЗІРКИ/КОМЕТИ ---
         if theme_mgr.current_theme == "light":
-            # Світла тема: Велика яскрава кулька
             pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
             highlight_offset = int(self._base_size * 0.3)
             highlight_size = int(self._base_size * 0.25)
             pygame.draw.circle(surface, (255, 255, 255), (self._x - highlight_offset, self._y - highlight_offset), highlight_size)
-            
         else:
-            # Темна тема: Мерехтлива зірка
             inner_size = int(current_size)
             outer_size = int(current_size * 1.6)
             base_alpha = int(100 + 155 * self._z)
@@ -519,7 +518,7 @@ class MenuState(GameState):
         if self._btn_start.check_click(event):
             self._game.change_state(PlayingState(self._game))
         elif self._btn_rhythm.check_click(event):
-             self._game.change_state(RhythmSelectionState(self._game))
+             self._game.change_state(SongSelectState(self._game))
         elif self._btn_settings.check_click(event):
             self._game.change_state(SettingsState(self._game))
         elif self._btn_quit.check_click(event):
@@ -537,33 +536,47 @@ class MenuState(GameState):
         for btn in self._buttons: btn.draw(surface)
         if self._confirm_modal: self._confirm_modal.draw(surface)
 
-class RhythmSelectionState(GameState):
+class SongSelectState(GameState):
     def __init__(self, game):
         super().__init__(game)
-        self._buttons = []
-        start_y = 250
-        for i, song in enumerate(SONG_LIST):
-            btn = Button(WIDTH//2 - 150, start_y + i * 80, 300, 60, song["name"], "normal", game.FONT_SMALL)
-            self._buttons.append(btn)
-        self._btn_back = Button(WIDTH//2 - 100, 650, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
-        self._buttons.append(self._btn_back)
+        self._btn_back = Button(WIDTH//2 - 100, 700, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
+        self._song_buttons = []
+        
+        try:
+            with open(NOTES_FILE, 'r') as f:
+                data = json.load(f)
+                keys = sorted(list(data.keys()))
+                
+                start_y = 200
+                for i, key in enumerate(keys):
+                    name = SONG_NAMES_MAP.get(key, f"Song {key}")
+                    btn = Button(WIDTH//2 - 125, start_y + (i * 60), 250, 50, name, "normal", game.FONT_SMALL)
+                    self._song_buttons.append((btn, key))
+                    
+        except Exception as e:
+            print(f"Error loading songs for menu: {e}")
 
     def handle_event(self, event):
         if self._btn_back.check_click(event):
             self._game.change_state(MenuState(self._game))
-        for i, btn in enumerate(self._buttons[:-1]):
+            return
+
+        for btn, key in self._song_buttons:
             if btn.check_click(event):
-                selected_song = SONG_LIST[i]
-                self._game.change_state(RhythmGameState(self._game, selected_song))
+                self._game.change_state(RhythmGameState(self._game, song_id=key))
 
     def update(self, dt):
         mouse_pos = pygame.mouse.get_pos()
-        for btn in self._buttons: btn.update(dt, mouse_pos=mouse_pos)
+        self._btn_back.update(dt, mouse_pos=mouse_pos)
+        for btn, key in self._song_buttons:
+            btn.update(dt, mouse_pos=mouse_pos)
 
     def draw(self, surface):
-        txt_col = theme_mgr.get("text_color")
-        draw_text(surface, "Select Song", self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
-        for btn in self._buttons: btn.draw(surface)
+        draw_text(surface, "Select Song", self._game.FONT_MEDIUM, WIDTH // 2, 100, color=theme_mgr.get("text_color"))
+        self._btn_back.draw(surface)
+        for btn, key in self._song_buttons:
+            btn.draw(surface)
+
 
 class SettingsState(GameState):
     def __init__(self, game):
@@ -579,7 +592,6 @@ class SettingsState(GameState):
         self._btn_back_sub = Button(WIDTH//2 - 100, 600, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
         
         self._btn_theme = Button(WIDTH//2 - 100, 350, 200, 50, "", "normal", game.FONT_SMALL)
-        
         self._btn_easy = Button(WIDTH//2 - 100, 300, 200, 50, "Easy", "normal", game.FONT_SMALL)
         self._btn_medium = Button(WIDTH//2 - 100, 370, 200, 50, "Normal", "normal", game.FONT_SMALL)
         self._btn_hard = Button(WIDTH//2 - 100, 440, 200, 50, "Hard", "normal", game.FONT_SMALL)
@@ -644,16 +656,28 @@ class SettingsState(GameState):
             self._btn_easy.draw(surface); self._btn_medium.draw(surface); self._btn_hard.draw(surface); self._btn_back_sub.draw(surface)
 
 class GameOverState(GameState):
-    def __init__(self, game, score):
+    def __init__(self, game, score, show_highscore=True):
         super().__init__(game)
         self._score = score
-        self._game.save_high_score(score)
-        self._high_score = self._game.get_high_score()
+        self._show_highscore = show_highscore
+        
+        if show_highscore:
+            self._game.save_high_score(score)
+            self._high_score = self._game.get_high_score()
+        else:
+            self._high_score = 0
+
         self._btn_retry = Button(WIDTH//2 - 100, 400, 200, 50, "RETRY", "normal", game.FONT_MEDIUM)
         self._btn_menu = Button(WIDTH//2 - 100, 470, 200, 50, "MENU", "normal", game.FONT_MEDIUM)
 
     def handle_event(self, event):
-        if self._btn_retry.check_click(event): self._game.change_state(PlayingState(self._game))
+        if self._btn_retry.check_click(event):
+            # Restart logic: if no highscore shown -> implies Rhythm mode restart
+            # Otherwise -> Classic mode
+            if not self._show_highscore:
+                 self._game.change_state(SongSelectState(self._game))
+            else:
+                 self._game.change_state(PlayingState(self._game))
         elif self._btn_menu.check_click(event): self._game.change_state(MenuState(self._game))
 
     def update(self, dt):
@@ -665,9 +689,20 @@ class GameOverState(GameState):
         overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 200))
         surface.blit(overlay, (0, 0))
-        draw_text(surface, "GAME OVER", self._game.FONT_BIG, WIDTH // 2, 150, RED_ERROR)
-        draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
-        draw_text(surface, f"High Score: {self._high_score}", self._game.FONT_SMALL, WIDTH // 2, 300, (255, 215, 0))
+        
+        # Колір GAME OVER залежить від теми
+        game_over_col = theme_mgr.get("text_color")
+        
+        draw_text(surface, "GAME OVER", self._game.FONT_BIG, WIDTH // 2, 150, game_over_col)
+        
+        # У ритм-режимі не показуємо рахунок як "score", це не має сенсу
+        if self._show_highscore:
+            draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
+            draw_text(surface, f"High Score: {self._high_score}", self._game.FONT_SMALL, WIDTH // 2, 300, (255, 215, 0))
+        else:
+            # Для ритм режиму просто "Completed" або щось подібне
+            draw_text(surface, "Song Ended", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
+            
         self._btn_retry.draw(surface)
         self._btn_menu.draw(surface)
 
@@ -713,7 +748,7 @@ class PlayingState(GameState):
                 self._missed_stars += 1
                 self._score = max(0, self._score - 5)
                 if self._missed_stars >= MAX_MISSED_STARS:
-                    self._game.change_state(GameOverState(self._game, self._score))
+                    self._game.change_state(GameOverState(self._game, self._score, show_highscore=True))
                     return
             elif star.get_rect().colliderect(basket_rect):
                 self._game.play_catch_sound()
@@ -751,104 +786,178 @@ class PlayingState(GameState):
         draw_text(surface, f"Speed: {self._speed_multiplier:.2f}x", self._game.FONT_TINY, WIDTH - 80, 20, color=txt_col, align="topright")
         draw_text(surface, f"Platform: {self._basket.get_vel():.1f}", self._game.FONT_TINY, WIDTH - 80, 50, color=txt_col, align="topright")
 
+# --- RHYTHM GAME STATE ---
+
 class RhythmGameState(GameState):
-    """Стан Ритм-Гри."""
-    def __init__(self, game, song_data):
+    def __init__(self, game, song_id=None):
         super().__init__(game)
         self._basket = Basket()
         self._star_manager = ObjectManager[Star]()
         self._particle_manager = ObjectManager[Particle]()
-        self._song_data = song_data
-        self._bpm = song_data["bpm"]
-        self._beat_interval = 60.0 / self._bpm
-        self._next_beat_time = song_data["offset"]
-        self._timer = 0.0
-        self._speed = 5.0
+        
+        # --- НАЛАШТУВАННЯ ---
         self._score = 0
         self._is_playing = True
+        self._speed = 7.0 
         
-        # Gating logic
-        self._audio_gate_timer = 0.0
-        self._audio_gated = False # Стан "воріт"
+        self._spawned_count = 0 
+        self._notes_list = []
+        self._total_notes = 0
+        self._sound_cache = {} 
+        self._song_name_display = "Unknown Song"
+        
+        # Словник для виправлення неправильних назв нот у JSON
+        self._note_mapping = {
+            "df": "d-5" # Виправляємо 'df' на d-5.ogg
+        }
+        
+        # Завантаження списку нот
+        try:
+            with open(NOTES_FILE, 'r') as file:
+                notes_dict = json.load(file)
+                if song_id and song_id in notes_dict:
+                    self._notes_list = notes_dict[song_id]
+                    self._song_name_display = SONG_NAMES_MAP.get(song_id, f"Song {song_id}")
+                    print(f"Selected song: {song_id}")
+                else:
+                    available_songs = list(notes_dict.keys())
+                    if available_songs:
+                        selected_song_key = random.choice(available_songs)
+                        self._notes_list = notes_dict[selected_song_key]
+                        self._song_name_display = SONG_NAMES_MAP.get(selected_song_key, "Random Song")
+                
+                self._total_notes = len(self._notes_list)
+        except Exception as e:
+            print(f"Error loading notes.json: {e}")
+            self._notes_list = []
+
+        # Завантаження звуків
+        print("Loading sounds...")
+        unique_notes = set(self._notes_list)
+        for note_name in unique_notes:
+            clean_name = note_name.strip()
+            
+            # Перевіряємо мапінг (наприклад, для 'df')
+            if clean_name in self._note_mapping:
+                clean_name = self._note_mapping[clean_name]
+
+            # Перевіряємо різні варіанти написання файлів
+            possible_names = [
+                clean_name,
+                clean_name.lower(),
+                clean_name.upper(),
+                clean_name.replace("-", "#")
+            ]
+            
+            sound_loaded = False
+            for try_name in possible_names:
+                for ext in [".ogg", ".mp3", ".wav"]:
+                    path = os.path.join(SOUND_FOLDER, f"{try_name}{ext}")
+                    if os.path.exists(path):
+                        try:
+                            snd = pygame.mixer.Sound(path)
+                            snd.set_volume(1.0)
+                            self._sound_cache[note_name.strip()] = snd # Зберігаємо під оригінальним ім'ям з JSON
+                            sound_loaded = True
+                            break
+                        except: pass
+                if sound_loaded: break
+            
+            if not sound_loaded:
+                print(f"WARNING: File not found for note: '{clean_name}'")
         
         pygame.mixer.music.stop()
-        try:
-            path = os.path.join(SOUND_FOLDER, song_data["file"])
-            pygame.mixer.music.load(path)
-            pygame.mixer.music.set_volume(0) # СТАРТ ТИХО (Gated)
-            pygame.mixer.music.play()
-        except Exception as e:
-            print(f"Error loading rhythm song: {e}")
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            # Відновлюємо гучність перед виходом
-            pygame.mixer.music.set_volume(0.5) 
-            self._game.change_state(MenuState(self._game))
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self._game.change_state(MenuState(self._game))
+            elif event.key == pygame.K_SPACE:
+                self._game.change_state(PausedState(self._game, self))
 
+    def _spawn_star(self):
+        if self._spawned_count < self._total_notes:
+            lane_x = random.choice(LANE_CENTERS)
+            note_name = self._notes_list[self._spawned_count].strip()
+            
+            star = Star(1.0, fixed_x=int(lane_x), note_name=note_name) 
+            star.set_y(-50)
+            self._star_manager.add(star)
+            self._spawned_count += 1
+    
     def update(self, dt):
         if not self._is_playing: return
-        if not pygame.mixer.music.get_busy():
-             self._game.change_state(GameOverState(self._game, self._score))
-
-        # --- GATING LOGIC ---
-        if self._audio_gate_timer > 0:
-            self._audio_gate_timer -= dt
-        else:
-            # Час вийшов, вимикаємо звук
-            if not self._audio_gated:
-                pygame.mixer.music.set_volume(0)
-                self._audio_gated = True
-        # --------------------
 
         keys = pygame.key.get_pressed()
-        self._basket.update(dt, keys=keys, speed_multiplier=1.2)
-        self._timer += dt
+        self._basket.update(dt, keys=keys, speed_multiplier=1.3)
+
+        # --- ЛОГІКА СПАВНУ ---
+        stars = self._star_manager.get_list()
+        should_spawn = False
         
-        if self._timer >= self._next_beat_time:
-            self._spawn_rhythm_note()
-            self._next_beat_time += self._beat_interval * 2
-            
-        self._star_manager.update_all(dt, speed_multiplier=1.0)
+        if len(stars) == 0:
+            should_spawn = True
+        else:
+            last_star = stars[-1]
+            min_distance = 300 + (self._speed * 10) 
+            if last_star.get_y() > min_distance:
+                should_spawn = True
         
+        if should_spawn and self._spawned_count < self._total_notes:
+            self._spawn_star()
+        
+        # WIN CONDITION
+        if self._spawned_count >= self._total_notes and len(stars) == 0:
+             self._game.change_state(GameOverState(self._game, self._score, show_highscore=False))
+             return
+
+        self._star_manager.update_all(dt, speed=self._speed, speed_multiplier=1.0)
+        
+        # --- КОЛІЗІЇ ---
         basket_rect = self._basket.get_rect()
         for star in self._star_manager.get_list()[:]:
+            
             if star.get_y() > HEIGHT:
-                pygame.mixer.music.set_volume(0.5) # Відновлюємо гучність
-                self._game.change_state(GameOverState(self._game, self._score))
-                return
-            elif star.get_rect().colliderect(basket_rect):
-                # UNMUTE MUSIC!
-                pygame.mixer.music.set_volume(1.0)
-                self._audio_gate_timer = 0.3 # Звук грає 0.3 сек
-                self._audio_gated = False
+                self._star_manager.remove(star)
                 
-                self._score += 10
+            elif star.get_rect().colliderect(basket_rect):
+                # 1. Спроба зіграти ноту
+                if star.note_name and star.note_name in self._sound_cache:
+                    self._sound_cache[star.note_name].play()
+                else:
+                    # 2. ФОЛБЕК: Якщо ноти немає
+                    print(f"MISSING SOUND FILE: {star.note_name}")
+                    self._game.play_catch_sound()
+                
+                self._score += 1
+                self._speed += 0.02 
+                if self._speed > 18: self._speed = 18
+                
                 star_pos = star.get_pos()
                 star_color = star.get_color()
                 for _ in range(10):
                     self._particle_manager.add(Particle(star_pos[0], star_pos[1], star_color))
-                self._star_manager.remove(star)
                 
+                self._star_manager.remove(star)
+
         for particle in self._particle_manager.get_list()[:]:
             if not particle.update(dt):
                 self._particle_manager.remove(particle)
-
-    def _spawn_rhythm_note(self):
-        lane_x = random.choice(LANE_CENTERS)
-        star = Star(self._speed, fixed_x=int(lane_x))
-        star.set_y(-50)
-        self._star_manager.add(star)
 
     def draw(self, surface):
         self._basket.draw(surface)
         self._star_manager.draw_all(surface)
         self._particle_manager.draw_all(surface)
+        
         txt_col = theme_mgr.get("text_color")
-        draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, 60, 20, color=txt_col, align="topleft")
+        # ТІЛЬКИ НАЗВА ПІСНІ ЗВЕРХУ
+        draw_text(surface, self._song_name_display, self._game.FONT_MEDIUM, WIDTH//2, 50, color=txt_col)
+        
+        # Прогрес
+        draw_text(surface, f"{self._spawned_count}/{self._total_notes}", self._game.FONT_SMALL, WIDTH - 60, 50, color=txt_col)
 
 class PausedState(GameState):
-    def __init__(self, game, playing_state: PlayingState):
+    def __init__(self, game, playing_state: GameState):
         super().__init__(game)
         self._playing_state = playing_state
         self._overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -875,8 +984,11 @@ class PausedState(GameState):
 
 class Game:
     def __init__(self):
+        # ЗБІЛЬШЕНО КІЛЬКІСТЬ КАНАЛІВ (64) ДЛЯ ПОЛІФОНІЇ
         pygame.mixer.pre_init(44100, -16, 2, 512)
         pygame.init()
+        pygame.mixer.set_num_channels(64) 
+        
         self._window = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Retinal")
         self._clock = pygame.time.Clock()
@@ -922,7 +1034,7 @@ class Game:
         return self._high_score
 
     def _load_fonts(self):
-        FONT_FILE = "font.otf"
+        FONT_FILE = "Moonscape Demo.otf"
         try:
             self.FONT_BIG = pygame.font.Font(FONT_FILE, 70)
             self.FONT_MEDIUM = pygame.font.Font(FONT_FILE, 40)
@@ -949,7 +1061,8 @@ class Game:
             hight_path = self._sound_effect_paths.get("hight")
             if hight_path and os.path.exists(hight_path):
                  self._catch_sound = pygame.mixer.Sound(hight_path)
-                 self._sound_channel_star = pygame.mixer.Channel(0)
+                 # Створюємо окремий канал для ефектів, щоб не перебивати музику
+                 self._sound_channel_star = pygame.mixer.Channel(63) 
             else:
                  self._catch_sound = None
                  self._sound_channel_star = None
@@ -1016,7 +1129,7 @@ class Game:
     def change_state(self, new_state: GameState):
         self._current_state = new_state
         
-        if isinstance(new_state, (MenuState, SettingsState, GameOverState, RhythmSelectionState)):
+        if isinstance(new_state, (MenuState, SettingsState, GameOverState, SongSelectState)):
              self.play_music(self._menu_music_path, volume=pygame.mixer.music.get_volume())
         elif isinstance(new_state, PlayingState):
             self.play_music(self._game_music_path, volume=0.3)
