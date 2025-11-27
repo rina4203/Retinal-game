@@ -475,9 +475,10 @@ class Star(GameObject):
         self._trail = [] 
         self._max_trail_length = 15 
         
+        # Налаштування кольорів для світлої теми
         if theme_mgr.current_theme == "light":
             self._specific_color = random.choice(theme_mgr.light_theme_star_colors)
-            self._base_size = 25  
+            self._base_size = 20 # Трохи менший розмір, бо сяйво додає об'єму
         else:
             self._specific_color = None
 
@@ -518,16 +519,22 @@ class Star(GameObject):
 
     def draw(self, surface):
         shape = self._game.get_equipped("shape")
+        # Ефект пульсації
         p = clamp((math.sin(self._blink_timer) * 0.5 + 0.5), 0, 1)
-        current_size = self._base_size * (0.7 + p * 0.6)
+        current_size = self._base_size * (0.8 + p * 0.4) # Трохи змінили пульсацію для сяйва
         
+        # Вибір кольорів залежно від теми
         if theme_mgr.current_theme == "light":
-            base_color = self._specific_color
-            halo_color = (255, 255, 255)
+            base_color = self._specific_color # Яскраві кольори
+            # Ореол робимо білим або світлим відтінком основного кольору
+            halo_color = (255, 255, 255) 
+            halo_alpha_base = 150 # Більш видимий ореол для світлої теми
         else:
-            base_color = (255, 229, 180) 
-            halo_color = (255, 255, 204) 
+            base_color = (255, 229, 180) # Кремовий
+            halo_color = (255, 255, 204) # Жовтуватий
+            halo_alpha_base = 100
 
+        # Малювання ритм-нот (хвіст)
         if self._is_rhythm_note:
              if len(self._trail) > 1:
                 for i, (tx, ty) in enumerate(self._trail):
@@ -537,7 +544,13 @@ class Star(GameObject):
                     s_trail = pygame.Surface((t_size*2, t_size*2), pygame.SRCALPHA)
                     pygame.draw.circle(s_trail, (*base_color, alpha), (t_size, t_size), t_size)
                     surface.blit(s_trail, (tx - t_size, ty - t_size))
-             pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
+             # Для ритм нот теж додаємо сяйво
+             s = pygame.Surface((int(current_size*4), int(current_size*4)), pygame.SRCALPHA)
+             pygame.draw.circle(s, (*halo_color, halo_alpha_base), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
+             pygame.draw.circle(s, (*base_color, 255), (int(current_size*2), int(current_size*2)), int(current_size))
+             surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
+        
+        # Малювання звичайних падаючих зірок
         else:
             if shape == "Square":
                 rect = pygame.Rect(self._x - current_size, self._y - current_size, current_size*2, current_size*2)
@@ -550,16 +563,21 @@ class Star(GameObject):
                 ]
                 pygame.draw.polygon(surface, base_color, points)
             else: 
-                if theme_mgr.current_theme == "light":
-                      pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
-                      pygame.draw.circle(surface, (255,255,255), (self._x - self._base_size*0.3, self._y - self._base_size*0.3), int(self._base_size*0.2))
-                else:
-                      outer_alpha = int(100 * 0.5)
-                      s = pygame.Surface((int(current_size*4), int(current_size*4)), pygame.SRCALPHA)
-                      pygame.draw.circle(s, (*halo_color, outer_alpha), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
-                      pygame.draw.circle(s, (*base_color, 255), (int(current_size*2), int(current_size*2)), int(current_size))
-                      surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
-
+                # КРУГ (Default/Star shape)
+                # Тепер використовуємо "glow" ефект для обох тем
+                
+                s = pygame.Surface((int(current_size*4), int(current_size*4)), pygame.SRCALPHA)
+                
+                # 1. Ореол (Glow)
+                # alpha залежить від пульсації
+                outer_alpha = int(halo_alpha_base * (0.7 + p * 0.3))
+                pygame.draw.circle(s, (*halo_color, outer_alpha), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
+                
+                # 2. Ядро (Core) - суцільний колір
+                pygame.draw.circle(s, (*base_color, 255), (int(current_size*2), int(current_size*2)), int(current_size))
+                
+                # Малюємо поверхню на екран
+                surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
 
 # --- UI CLASSES ---
 
