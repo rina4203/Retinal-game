@@ -36,14 +36,16 @@ logging.basicConfig(
 )
 
 # --- FILE PATHS ---
-SOUND_FOLDER = "sound"         #< Directory containing audio files
-HIGHSCORE_FILE = "highscore.txt" #< File to store local high scores
-SAVE_FILE = "save_data.json"   #< JSON file for persistence (currency, inventory)
-NOTES_FILE = "notes.json"      #< JSON file containing beatmaps
+SOUND_FOLDER = "sound"           #< Directory containing audio files
+FONT_FOLDER = "etc"              #< Directory containing font files (НОВА ЗМІННА)
 
-# Font files configuration
-FONT_FILE_EN = "font.otf"              #< Custom font for English
-FONT_FILE_UA = "FiorinaTitle-Light.otf" #< Custom font for Ukrainian
+HIGHSCORE_FILE = "highscore.txt" #< File to store local high scores
+SAVE_FILE = "save_data.json"     #< JSON file for persistence (currency, inventory)
+NOTES_FILE = "notes.json"        #< JSON file containing beatmaps
+
+# Font files configuration (ОНОВЛЕНО ШЛЯХИ)
+FONT_FILE_EN = os.path.join(FONT_FOLDER, "font.otf")               #< Custom font for English
+FONT_FILE_UA = os.path.join(FONT_FOLDER, "FiorinaTitle-Light.otf") #< Custom font for Ukrainian
 
 # --- SONG CONFIGURATION ---
 """
