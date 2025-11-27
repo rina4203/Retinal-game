@@ -71,6 +71,18 @@ class ThemeManager:
         self.target_theme = ""
         self.transition_speed = 15
 
+        # Генеруємо багато хмаринок для світлої теми
+        self.light_clouds = []
+        for _ in range(25): # 25 хмаринок
+            self.light_clouds.append({
+                "type": "cloud",
+                "x": random.randint(0, WIDTH),
+                "y": random.randint(0, HEIGHT),
+                "size": random.randint(60, 180), # Різний розмір
+                "speed": random.uniform(-0.15, 0.15),
+                "alpha": random.randint(40, 120) # Різна прозорість (накладання)
+            })
+
         self.themes = {
             "dark": {
                 "bg_color": (20, 20, 45),
@@ -94,52 +106,33 @@ class ThemeManager:
                 "star_style": "glow" 
             },
             "light": {
-                # SKY BLUE / BOHO SKY
                 "bg_color": (135, 206, 250), 
                 "text_color": (25, 25, 70),
-                
-                "platform_color": (20, 50, 100), # Темно-синій
+                "platform_color": (20, 50, 100),
                 "particle_color": None,
-                
-                "btn_color": (20, 50, 100), # Темно-синій
+                "btn_color": (20, 50, 100),
                 "btn_hover": (40, 70, 130),
                 "btn_active": (65, 105, 225),
                 "btn_text_color": (255, 255, 255),
-                
                 "slider_line": (255, 255, 255),
                 "slider_knob": (20, 50, 100),
                 "modal_bg": (135, 206, 250),
-                
-                # Світла тема: ВЕЛИКІ БІЛІ КРУГИ (ХМАРИНКИ)
-                # Вони виглядають як "збільшені зорі з темної теми" (центр + ореол)
-                "bg_elements": [
-                    {"type": "cloud", "x": 100, "y": 650, "size": 120, "speed": 0.2},
-                    {"type": "cloud", "x": 400, "y": 700, "size": 150, "speed": -0.15},
-                    {"type": "cloud", "x": 250, "y": 780, "size": 180, "speed": 0.1}
-                ],
+                # Світла тема: Багато хмаринок
+                "bg_elements": self.light_clouds,
                 "has_bg_stars": False,
                 "star_style": "ball"
             }
         }
         
         self.light_theme_star_colors = [
-            (255, 105, 180), # Pink
-            (50, 205, 50),   # Green
-            (255, 215, 0),   # Gold
-            (255, 69, 0)     # Red-Orange
+            (255, 105, 180), (50, 205, 50), (255, 215, 0), (255, 69, 0)
         ]
         
-        # Кольори для магазину
         self.shop_colors = {
             "Default": None,
-            "Red": (220, 60, 60),
-            "Orange": (255, 140, 0),
-            "Yellow": (255, 215, 0),
-            "Green": (50, 205, 50),
-            "Cyan": (0, 255, 255),
-            "Blue": (30, 144, 255),
-            "Purple": (138, 43, 226),
-            "Pink": (255, 105, 180)
+            "Red": (220, 60, 60), "Orange": (255, 140, 0), "Yellow": (255, 215, 0),
+            "Green": (50, 205, 50), "Cyan": (0, 255, 255), "Blue": (30, 144, 255),
+            "Purple": (138, 43, 226), "Pink": (255, 105, 180)
         }
 
     def get(self, key):
@@ -218,7 +211,6 @@ class ObjectManager(Generic[T]):
 # --- ІГРОВІ ОБ'ЄКТИ ---
 
 class ProceduralWave(GameObject):
-    """Малює хвилі АБО декоративні елементи фону (хмаринки)."""
     def __init__(self, index):
         self._index = index
         self._phase = random.uniform(0, 2 * math.pi)
@@ -226,25 +218,36 @@ class ProceduralWave(GameObject):
         self._update_params_from_theme()
 
     def _update_params_from_theme(self):
-        params = theme_mgr.get("bg_elements")[self._index]
-        self._type = params["type"] # "wave" or "cloud"
-        
-        if self._type == "wave":
-            self._color = params["color"]
-            self._amplitude = params["amp"]
-            self._frequency = params["freq"]
+        elements = theme_mgr.get("bg_elements")
+        if self._index < len(elements):
+            params = elements[self._index]
+            self._type = params["type"]
             self._speed = params["speed"]
-            self._y_offset = params["y"]
-        elif self._type == "cloud":
-            self._x_center = params["x"]
-            self._y_center = params["y"]
-            self._radius = params["size"]
-            self._speed = params["speed"]
+            
+            if self._type == "wave":
+                self._color = params["color"]
+                self._amplitude = params["amp"]
+                self._frequency = params["freq"]
+                self._y_offset = params["y"]
+            elif self._type == "cloud":
+                self._x_center = params["x"]
+                self._y_center = params["y"]
+                self._radius = params["size"]
+                self._alpha = params.get("alpha", 100)
+        else:
+             self._type = "none"
+             self._speed = 0
 
     def update(self, dt, **kwargs):
         if kwargs.get("theme_switched"):
             self._update_params_from_theme()
-        self._phase += self._speed * dt
+            
+        if self._type == "cloud":
+            self._x_center += self._speed * 60 * dt
+            if self._x_center > WIDTH + self._radius: self._x_center = -self._radius
+            elif self._x_center < -self._radius: self._x_center = WIDTH + self._radius
+        elif self._type == "wave":
+            self._phase += self._speed * dt
 
     def draw(self, surface):
         self._surface.fill((0, 0, 0, 0))
@@ -257,23 +260,17 @@ class ProceduralWave(GameObject):
             points.append((WIDTH, HEIGHT))
             points.append((0, HEIGHT))
             pygame.draw.polygon(self._surface, self._color, points)
+            surface.blit(self._surface, (0, 0))
             
         elif self._type == "cloud":
-            # Малюємо хмаринку в стилі зірки (ореол + центр)
-            # Рух
-            offset = math.sin(self._phase) * 15
-            
-            # Колір білий, прозорий
-            outer_color = (255, 255, 255, 80)  # Прозоріше
-            inner_color = (255, 255, 255, 150) # Менш прозоре
-            
-            outer_radius = int(self._radius + offset)
+            outer_color = (255, 255, 255, int(self._alpha * 0.6))
+            inner_color = (255, 255, 255, self._alpha)
+            outer_radius = int(self._radius)
             inner_radius = int(outer_radius * 0.6)
             
-            pygame.draw.circle(self._surface, outer_color, (self._x_center, self._y_center), outer_radius)
-            pygame.draw.circle(self._surface, inner_color, (self._x_center, self._y_center), inner_radius)
-
-        surface.blit(self._surface, (0, 0))
+            # Центр хмарки (біле коло)
+            pygame.draw.circle(surface, outer_color, (int(self._x_center), int(self._y_center)), outer_radius)
+            pygame.draw.circle(surface, inner_color, (int(self._x_center), int(self._y_center)), inner_radius)
 
 class Particle(GameObject):
     def __init__(self, x, y, specific_color=None):
@@ -282,9 +279,7 @@ class Particle(GameObject):
         self._vx = random.uniform(-150, 150)
         self._vy = random.uniform(-150, 150)
         self._size = random.uniform(2, 5)
-        
-        if specific_color:
-            self._color = specific_color
+        if specific_color: self._color = specific_color
         else:
             self._color = theme_mgr.get("particle_color")
             if self._color is None: self._color = (255, 255, 255)
@@ -325,17 +320,12 @@ class Basket(GameObject):
         keys = kwargs.get("keys")
         speed_multiplier = kwargs.get("speed_multiplier", 1.0)
         if not keys: return
-
         calculated_vel = self._base_vel + (speed_multiplier - 1.0) * 3.0
         self._vel = min(MAX_PLATFORM_SPEED, calculated_vel)
-
-        if keys[pygame.K_LEFT] and self._x > 0:
-            self._x -= self._vel
-        if keys[pygame.K_RIGHT] and self._x < WIDTH - width:
-            self._x += self._vel
+        if keys[pygame.K_LEFT] and self._x > 0: self._x -= self._vel
+        if keys[pygame.K_RIGHT] and self._x < WIDTH - width: self._x += self._vel
 
     def get_vel(self) -> float: return self._vel
-    
     def get_rect(self) -> pygame.Rect:
         width, _ = self._get_current_properties()
         return pygame.Rect(self._x, self._y, width, self._height)
@@ -373,7 +363,6 @@ class Currency(GameObject):
             pygame.draw.polygon(surface, (255, 255, 100), points)
             pygame.draw.circle(surface, (255, 255, 200, 100), (int(self._x), int(self._y)), int(self._size * 0.8))
         else:
-            # Квітка для світлої теми
             for i in range(5):
                 angle_rad = math.radians(self._angle + i * 72)
                 px = self._x + math.cos(angle_rad) * (self._size * 0.6)
@@ -452,8 +441,8 @@ class Star(GameObject):
             base_color = self._specific_color
             halo_color = (255, 255, 255)
         else:
-            base_color = PASTEL_CREAM
-            halo_color = PASTEL_CREAM
+            base_color = (255, 229, 180) 
+            halo_color = (255, 255, 204) 
 
         if self._is_rhythm_note:
              if len(self._trail) > 1:
@@ -466,7 +455,6 @@ class Star(GameObject):
                     surface.blit(s_trail, (tx - t_size, ty - t_size))
              pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
         else:
-            # Endless Mode Shape
             if shape == "Square":
                 rect = pygame.Rect(self._x - current_size, self._y - current_size, current_size*2, current_size*2)
                 pygame.draw.rect(surface, base_color, rect)
@@ -479,17 +467,14 @@ class Star(GameObject):
                 pygame.draw.polygon(surface, base_color, points)
             else: 
                 if theme_mgr.current_theme == "light":
-                     # Світла тема: Просто кольорові круги (Бохо стиль)
                      pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
                      pygame.draw.circle(surface, (255,255,255), (self._x - self._base_size*0.3, self._y - self._base_size*0.3), int(self._base_size*0.2))
                 else:
-                     # Темна тема: Сяючі зорі
                      outer_alpha = int(100 * 0.5)
                      s = pygame.Surface((int(current_size*4), int(current_size*4)), pygame.SRCALPHA)
-                     pygame.draw.circle(s, (*PASTEL_CREAM, outer_alpha), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
-                     pygame.draw.circle(s, (*PASTEL_PEACH, 255), (int(current_size*2), int(current_size*2)), int(current_size))
+                     pygame.draw.circle(s, (*halo_color, outer_alpha), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
+                     pygame.draw.circle(s, (*base_color, 255), (int(current_size*2), int(current_size*2)), int(current_size))
                      surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
-
 
 # --- UI CLASSES ---
 
@@ -569,7 +554,6 @@ class Slider(UIElement):
         line_col = theme_mgr.get("slider_line")
         line_y = self._rect.centery
         pygame.draw.line(surface, line_col, (self._rect.left, line_y), (self._rect.right, line_y), 4)
-
         pct = (self._current_val - self._min_val) / (self._max_val - self._min_val)
         knob_x = self._rect.left + pct * self._rect.w
         knob_col = theme_mgr.get("slider_knob")
@@ -614,16 +598,19 @@ class ConfirmationModal:
 class MenuState(GameState):
     def __init__(self, game):
         super().__init__(game)
-        # 2 COLUMNS LAYOUT with gaps
-        # Left Column
-        self._btn_start = Button(30, 280, 180, 60, "START", "normal", game.FONT_MEDIUM)
-        self._btn_rhythm = Button(30, 360, 180, 60, "RHYTHM", "normal", game.FONT_MEDIUM)
-        self._btn_shop = Button(30, 440, 180, 60, "SHOP", "normal", game.FONT_MEDIUM)
+        # START (Center Top)
+        self._btn_start = Button(WIDTH//2 - 100, 250, 200, 60, "START", "normal", game.FONT_MEDIUM)
         
-        # Right Column
-        self._btn_settings = Button(270, 280, 180, 60, "SETTINGS", "normal", game.FONT_MEDIUM)
-        self._btn_theme = Button(270, 360, 180, 60, "", "normal", game.FONT_MEDIUM) # Dynamic text
-        self._btn_quit = Button(270, 440, 180, 60, "QUIT", "normal", game.FONT_MEDIUM)
+        # LEFT COLUMN (Rhythm, Theme)
+        self._btn_rhythm = Button(30, 340, 200, 60, "RHYTHM", "normal", game.FONT_MEDIUM)
+        self._btn_theme = Button(30, 420, 200, 60, "", "normal", game.FONT_MEDIUM) # Text set later
+        
+        # RIGHT COLUMN (Shop, Settings)
+        self._btn_shop = Button(270, 340, 200, 60, "SHOP", "normal", game.FONT_MEDIUM)
+        self._btn_settings = Button(270, 420, 200, 60, "SETTINGS", "normal", game.FONT_MEDIUM)
+        
+        # QUIT (Center Bottom)
+        self._btn_quit = Button(WIDTH//2 - 100, 520, 200, 60, "QUIT", "normal", game.FONT_MEDIUM)
         
         self._buttons = [self._btn_start, self._btn_rhythm, self._btn_shop, self._btn_settings, self._btn_theme, self._btn_quit]
         self._confirm_modal = None
@@ -631,8 +618,9 @@ class MenuState(GameState):
         self._update_theme_btn()
 
     def _update_theme_btn(self):
-        theme = theme_mgr.current_theme.upper()
-        self._btn_theme.set_text(f"THEME: {theme}")
+        # Button text shows the TARGET theme
+        theme_text = "LIGHT" if theme_mgr.current_theme == "dark" else "DARK"
+        self._btn_theme.set_text(theme_text)
 
     def handle_event(self, event):
         if self._confirm_modal:
@@ -714,6 +702,7 @@ class ShopState(GameState):
             self._game.change_state(MenuState(self._game))
         
         if self._btn_reset.check_click(event):
+            # Reset logic
             self._game.equip_item("color", "Default")
             self._game.equip_item("size", 0)
             self._game.equip_item("shape", "Star")
@@ -1214,13 +1203,15 @@ class Game:
             self.FONT_TINY = pygame.font.SysFont("Arial", 22)
 
     def _create_background(self):
+        self._waves_manager = ObjectManager[ProceduralWave]()
+        # Генеруємо 15 хмаринок/хвиль (індекси > 2 генеруються динамічно в класі ProceduralWave)
+        # Оскільки в dark темі лише 3, ми додаємо більше, але вони будуть ігноруватися/замінюватися ThemeManager
+        for i in range(15):
+             self._waves_manager.add(ProceduralWave(i))
+             
         self._bg_stars = []
         for _ in range(NUM_BG_STARS):
             self._bg_stars.append({'pos': (random.randint(0, WIDTH), random.randint(0, HEIGHT)), 'radius': random.randint(1, 2)})
-        self._waves_manager = ObjectManager[ProceduralWave]()
-        self._waves_manager.add(ProceduralWave(0)) 
-        self._waves_manager.add(ProceduralWave(1)) 
-        self._waves_manager.add(ProceduralWave(2)) 
 
     def _load_audio(self):
         try:
