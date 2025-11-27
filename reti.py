@@ -44,6 +44,23 @@ BLACK = (0, 0, 0)
 RED_ERROR = (215, 80, 80)
 GOLD = (240, 200, 80)
 GREEN_BUY = (100, 200, 120)
+PASTEL_CREAM = (255, 253, 208)
+
+# Бохо палітра (для фону)
+BOHO_BG = (135, 206, 250) # Небесно-блакитний
+
+# Кольори для магазину
+SHOP_COLORS = {
+    "Default": None,
+    "Red": (230, 100, 100),
+    "Orange": (240, 160, 100),
+    "Yellow": (240, 220, 100),
+    "Green": (120, 180, 120),
+    "Cyan": (100, 200, 200),
+    "Blue": (100, 140, 200),
+    "Purple": (160, 120, 200),
+    "Pink": (230, 150, 180)
+}
 
 # --- ДОПОМІЖНІ ФУНКЦІЇ ---
 def clamp(value, min_val, max_val):
@@ -71,16 +88,34 @@ class ThemeManager:
         self.target_theme = ""
         self.transition_speed = 15
 
-        # Генеруємо багато хмаринок для світлої теми
         self.light_clouds = []
-        for _ in range(25): # 25 хмаринок
+        
+        # 1. МАЛЕНЬКІ ХМАРИНКИ (ФОН) - Додаємо їх першими
+        # Вони маленькі, дуже прозорі і повільні
+        for _ in range(15):
+             self.light_clouds.append({
+                "type": "cloud",
+                "x": random.randint(0, WIDTH),
+                "y": random.randint(-150, HEIGHT),
+                "size": random.randint(15, 35),    # <-- МАЛЕНЬКИЙ РОЗМІР
+                "speed": random.uniform(0.2, 0.6), # Повільніші
+                "alpha": random.randint(40, 90),   # Дуже прозорі
+                "sway_speed": random.uniform(0.5, 1.5),
+                "sway_amp": random.randint(5, 15)
+            })
+
+        # 2. ВЕЛИКІ ХМАРИНКИ (ПЕРЕДНІЙ ПЛАН) - Ті, що були раніше
+        # Вони великі, яскравіші і швидші
+        for _ in range(7): 
             self.light_clouds.append({
                 "type": "cloud",
                 "x": random.randint(0, WIDTH),
-                "y": random.randint(0, HEIGHT),
-                "size": random.randint(60, 180), # Різний розмір
-                "speed": random.uniform(-0.15, 0.15),
-                "alpha": random.randint(40, 120) # Різна прозорість (накладання)
+                "y": random.randint(-150, HEIGHT), 
+                "size": random.randint(60, 120),   # <-- ВЕЛИКИЙ РОЗМІР
+                "speed": random.uniform(0.6, 1.3), # Швидші
+                "alpha": random.randint(120, 200), # Яскравіші
+                "sway_speed": random.uniform(0.5, 1.5),
+                "sway_amp": random.randint(10, 40)
             })
 
         self.themes = {
@@ -106,8 +141,8 @@ class ThemeManager:
                 "star_style": "glow" 
             },
             "light": {
-                "bg_color": (135, 206, 250), 
-                "text_color": (25, 25, 70),
+                "bg_color": BOHO_BG, 
+                "text_color": (255, 255, 255),
                 "platform_color": (20, 50, 100),
                 "particle_color": None,
                 "btn_color": (20, 50, 100),
@@ -117,7 +152,7 @@ class ThemeManager:
                 "slider_line": (255, 255, 255),
                 "slider_knob": (20, 50, 100),
                 "modal_bg": (135, 206, 250),
-                # Світла тема: Багато хмаринок
+                # Світла тема: Хмаринки (Всі разом)
                 "bg_elements": self.light_clouds,
                 "has_bg_stars": False,
                 "star_style": "ball"
@@ -125,7 +160,10 @@ class ThemeManager:
         }
         
         self.light_theme_star_colors = [
-            (255, 105, 180), (50, 205, 50), (255, 215, 0), (255, 69, 0)
+            (255, 105, 180), # Pink
+            (50, 205, 50),   # Green
+            (255, 215, 0),   # Gold
+            (255, 69, 0)     # Red-Orange
         ]
         
         self.shop_colors = {
@@ -211,14 +249,19 @@ class ObjectManager(Generic[T]):
 # --- ІГРОВІ ОБ'ЄКТИ ---
 
 class ProceduralWave(GameObject):
+    """Малює хвилі АБО хмаринки з оптимізацією."""
     def __init__(self, index):
         self._index = index
         self._phase = random.uniform(0, 2 * math.pi)
-        self._surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        
+        # Для плавності хмаринок
+        self._wobble_speed = random.uniform(1.0, 2.0)
         self._update_params_from_theme()
 
     def _update_params_from_theme(self):
         elements = theme_mgr.get("bg_elements")
+        
+        # Перевірка, щоб індекс не вийшов за межі списку (важливо!)
         if self._index < len(elements):
             params = elements[self._index]
             self._type = params["type"]
@@ -229,30 +272,51 @@ class ProceduralWave(GameObject):
                 self._amplitude = params["amp"]
                 self._frequency = params["freq"]
                 self._y_offset = params["y"]
+                # Для хвиль потрібна велика surface
+                self._surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
             elif self._type == "cloud":
-                self._x_center = params["x"]
-                self._y_center = params["y"]
+                self._x_base = params["x"]
+                self._y_base = params["y"]
                 self._radius = params["size"]
                 self._alpha = params.get("alpha", 100)
+                # Зчитуємо параметри хитання
+                self._float_speed = params.get("sway_speed", 1.0)
+                self._float_amp = params.get("sway_amp", 20)
+                
+                self._draw_x = self._x_base
+                self._draw_y = self._y_base
         else:
-             self._type = "none"
-             self._speed = 0
+            self._type = "none"
+            self._speed = 0
 
     def update(self, dt, **kwargs):
         if kwargs.get("theme_switched"):
             self._update_params_from_theme()
-            
+        
+        self._phase += self._speed * dt
+
         if self._type == "cloud":
-            self._x_center += self._speed * 60 * dt
-            if self._x_center > WIDTH + self._radius: self._x_center = -self._radius
-            elif self._x_center < -self._radius: self._x_center = WIDTH + self._radius
+            # --- ВЕРТИКАЛЬНИЙ РУХ (Зверху вниз) ---
+            self._y_base += self._speed * 60 * dt
+            
+            # Якщо хмарка вилетіла за нижній край
+            if self._y_base > HEIGHT + self._radius * 2: 
+                self._y_base = -self._radius * 2
+                self._x_base = random.randint(0, WIDTH)
+
+            # --- ГОРИЗОНТАЛЬНЕ ХИТАННЯ ---
+            current_time = pygame.time.get_ticks() / 1000.0
+            sway_offset = math.sin(current_time * self._float_speed + self._index) * self._float_amp
+            
+            self._draw_x = self._x_base + sway_offset
+            self._draw_y = self._y_base
+            
         elif self._type == "wave":
-            self._phase += self._speed * dt
+             pass # Фаза вже оновлена вище
 
     def draw(self, surface):
-        self._surface.fill((0, 0, 0, 0))
-        
         if self._type == "wave":
+            self._surface.fill((0, 0, 0, 0))
             points = []
             for x in range(WIDTH + 1):
                 y = self._amplitude * math.sin(self._frequency * x + self._phase) + self._y_offset
@@ -263,14 +327,26 @@ class ProceduralWave(GameObject):
             surface.blit(self._surface, (0, 0))
             
         elif self._type == "cloud":
-            outer_color = (255, 255, 255, int(self._alpha * 0.6))
-            inner_color = (255, 255, 255, self._alpha)
-            outer_radius = int(self._radius)
-            inner_radius = int(outer_radius * 0.6)
+            # ОПТИМІЗОВАНЕ МАЛЮВАННЯ ХМАРИНКИ (маленька surface)
+            pulse = math.sin(self._phase * self._wobble_speed) * 3
+            current_radius = self._radius + pulse
             
-            # Центр хмарки (біле коло)
-            pygame.draw.circle(surface, outer_color, (int(self._x_center), int(self._y_center)), outer_radius)
-            pygame.draw.circle(surface, inner_color, (int(self._x_center), int(self._y_center)), inner_radius)
+            surf_size = int(current_radius * 3) 
+            cloud_surf = pygame.Surface((surf_size, surf_size), pygame.SRCALPHA)
+            center = (surf_size // 2, surf_size // 2)
+            
+            outer_radius = current_radius * 1.5
+            inner_radius = current_radius * 0.7
+            
+            outer_color = (255, 255, 255, int(self._alpha * 0.4))
+            inner_color = (255, 255, 255, self._alpha)
+            
+            pygame.draw.circle(cloud_surf, outer_color, center, int(outer_radius))
+            pygame.draw.circle(cloud_surf, inner_color, center, int(inner_radius))
+            
+            blit_x = self._draw_x - surf_size // 2
+            blit_y = self._draw_y - surf_size // 2
+            surface.blit(cloud_surf, (blit_x, blit_y))
 
 class Particle(GameObject):
     def __init__(self, x, y, specific_color=None):
@@ -279,7 +355,9 @@ class Particle(GameObject):
         self._vx = random.uniform(-150, 150)
         self._vy = random.uniform(-150, 150)
         self._size = random.uniform(2, 5)
-        if specific_color: self._color = specific_color
+        
+        if specific_color:
+            self._color = specific_color
         else:
             self._color = theme_mgr.get("particle_color")
             if self._color is None: self._color = (255, 255, 255)
@@ -320,12 +398,17 @@ class Basket(GameObject):
         keys = kwargs.get("keys")
         speed_multiplier = kwargs.get("speed_multiplier", 1.0)
         if not keys: return
+
         calculated_vel = self._base_vel + (speed_multiplier - 1.0) * 3.0
         self._vel = min(MAX_PLATFORM_SPEED, calculated_vel)
-        if keys[pygame.K_LEFT] and self._x > 0: self._x -= self._vel
-        if keys[pygame.K_RIGHT] and self._x < WIDTH - width: self._x += self._vel
+
+        if keys[pygame.K_LEFT] and self._x > 0:
+            self._x -= self._vel
+        if keys[pygame.K_RIGHT] and self._x < WIDTH - width:
+            self._x += self._vel
 
     def get_vel(self) -> float: return self._vel
+    
     def get_rect(self) -> pygame.Rect:
         width, _ = self._get_current_properties()
         return pygame.Rect(self._x, self._y, width, self._height)
@@ -363,6 +446,7 @@ class Currency(GameObject):
             pygame.draw.polygon(surface, (255, 255, 100), points)
             pygame.draw.circle(surface, (255, 255, 200, 100), (int(self._x), int(self._y)), int(self._size * 0.8))
         else:
+            # Квітка для світлої теми
             for i in range(5):
                 angle_rad = math.radians(self._angle + i * 72)
                 px = self._x + math.cos(angle_rad) * (self._size * 0.6)
@@ -467,14 +551,15 @@ class Star(GameObject):
                 pygame.draw.polygon(surface, base_color, points)
             else: 
                 if theme_mgr.current_theme == "light":
-                     pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
-                     pygame.draw.circle(surface, (255,255,255), (self._x - self._base_size*0.3, self._y - self._base_size*0.3), int(self._base_size*0.2))
+                      pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
+                      pygame.draw.circle(surface, (255,255,255), (self._x - self._base_size*0.3, self._y - self._base_size*0.3), int(self._base_size*0.2))
                 else:
-                     outer_alpha = int(100 * 0.5)
-                     s = pygame.Surface((int(current_size*4), int(current_size*4)), pygame.SRCALPHA)
-                     pygame.draw.circle(s, (*halo_color, outer_alpha), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
-                     pygame.draw.circle(s, (*base_color, 255), (int(current_size*2), int(current_size*2)), int(current_size))
-                     surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
+                      outer_alpha = int(100 * 0.5)
+                      s = pygame.Surface((int(current_size*4), int(current_size*4)), pygame.SRCALPHA)
+                      pygame.draw.circle(s, (*halo_color, outer_alpha), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
+                      pygame.draw.circle(s, (*base_color, 255), (int(current_size*2), int(current_size*2)), int(current_size))
+                      surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
+
 
 # --- UI CLASSES ---
 
@@ -554,6 +639,7 @@ class Slider(UIElement):
         line_col = theme_mgr.get("slider_line")
         line_y = self._rect.centery
         pygame.draw.line(surface, line_col, (self._rect.left, line_y), (self._rect.right, line_y), 4)
+
         pct = (self._current_val - self._min_val) / (self._max_val - self._min_val)
         knob_x = self._rect.left + pct * self._rect.w
         knob_col = theme_mgr.get("slider_knob")
@@ -900,6 +986,47 @@ class GameOverState(GameState):
         self._btn_retry.draw(surface)
         self._btn_menu.draw(surface)
 
+class PausedState(GameState):
+    def __init__(self, game, previous_state):
+        super().__init__(game)
+        self._previous_state = previous_state
+        self._font = game.FONT_BIG
+        # Кнопка RESUME
+        self._btn_resume = Button(WIDTH//2 - 100, HEIGHT//2 - 30, 200, 60, "RESUME", "normal", game.FONT_MEDIUM)
+        # Кнопка MENU
+        self._btn_menu = Button(WIDTH//2 - 100, HEIGHT//2 + 50, 200, 60, "MENU", "normal", game.FONT_MEDIUM)
+
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+             self._game.change_state(self._previous_state)
+        
+        if self._btn_resume.check_click(event):
+            self._game.change_state(self._previous_state)
+        elif self._btn_menu.check_click(event):
+            # Скидаємо гучність музики перед виходом
+            pygame.mixer.music.set_volume(0.5)
+            self._game.change_state(MenuState(self._game))
+
+    def update(self, dt):
+        mouse_pos = pygame.mouse.get_pos()
+        self._btn_resume.update(dt, mouse_pos=mouse_pos)
+        self._btn_menu.update(dt, mouse_pos=mouse_pos)
+
+    def draw(self, surface):
+        # 1. Спочатку малюємо гру, яка була на фоні (застиглий кадр)
+        self._previous_state.draw(surface)
+        
+        # 2. Малюємо напівпрозорий чорний прямокутник на весь екран
+        # Це затемнить світлу тему і зробить текст видимим
+        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180)) # 180 - рівень прозорості (0-255)
+        surface.blit(overlay, (0, 0))
+
+        # 3. Малюємо текст і кнопки
+        draw_text(surface, "PAUSED", self._font, WIDTH // 2, HEIGHT // 3, WHITE)
+        self._btn_resume.draw(surface)
+        self._btn_menu.draw(surface)
+
 class PlayingState(GameState):
     def __init__(self, game):
         super().__init__(game)
@@ -1026,6 +1153,7 @@ class RhythmGameState(GameState):
              self._game.update_high_score(self._score)
              self._game.change_state(GameOverState(self._game, self._score))
 
+        # --- GATING LOGIC ---
         if self._audio_gate_timer > 0:
             self._audio_gate_timer -= dt
         else:
@@ -1076,30 +1204,6 @@ class RhythmGameState(GameState):
         self._particle_manager.draw_all(surface)
         txt_col = theme_mgr.get("text_color")
         draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, 60, 20, color=txt_col, align="topleft")
-
-class PausedState(GameState):
-    def __init__(self, game, playing_state: PlayingState):
-        super().__init__(game)
-        self._playing_state = playing_state
-        self._overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        self._overlay.fill((0, 0, 0, 180))
-
-    def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                self._game.change_state(self._playing_state)
-            elif event.key == pygame.K_ESCAPE:
-                self._game.change_state(MenuState(self._game))
-
-    def update(self, dt):
-        pass
-
-    def draw(self, surface):
-        self._playing_state.draw(surface)
-        surface.blit(self._overlay, (0, 0))
-        draw_text(surface, "PAUSED", self._game.FONT_BIG, WIDTH // 2, 300, color=WHITE)
-        draw_text(surface, "Press SPACE to resume", self._game.FONT_SMALL, WIDTH // 2, 400, color=WHITE)
-        draw_text(surface, "Press ESC for menu", self._game.FONT_TINY, WIDTH // 2, 450, color=WHITE)
 
 class Game:
     def __init__(self):
@@ -1203,12 +1307,17 @@ class Game:
             self.FONT_TINY = pygame.font.SysFont("Arial", 22)
 
     def _create_background(self):
+        # 1. СВІТЛА ТЕМА: Рахуємо скільки хмаринок у списку bg_elements
+        # Зараз там 15 (малі) + 7 (великі) = 22
+        num_clouds = len(theme_mgr.themes["light"]["bg_elements"])
+        
         self._waves_manager = ObjectManager[ProceduralWave]()
-        # Генеруємо 15 хмаринок/хвиль (індекси > 2 генеруються динамічно в класі ProceduralWave)
-        # Оскільки в dark темі лише 3, ми додаємо більше, але вони будуть ігноруватися/замінюватися ThemeManager
-        for i in range(15):
+        
+        # Створюємо їх усі
+        for i in range(num_clouds):
              self._waves_manager.add(ProceduralWave(i))
              
+        # 2. ТЕМНА ТЕМА: Генеруємо зірки
         self._bg_stars = []
         for _ in range(NUM_BG_STARS):
             self._bg_stars.append({'pos': (random.randint(0, WIDTH), random.randint(0, HEIGHT)), 'radius': random.randint(1, 2)})
