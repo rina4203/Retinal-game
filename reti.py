@@ -1,21 +1,43 @@
+"""
+@file reti.py
+@brief Головний файл ритм-гри "Retinal".
+@details Містить основний цикл гри, менеджер станів, та ігрові об'єкти.
+         Реалізовано патерни State, Singleton (через модульні змінні), Factory.
+         Підтримує i18n та логування.
+"""
+
 import os
+# Вимикаємо вітання Pygame
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 import pygame
 import random
 import math
 import json
+import logging
+import time
+import functools
 from abc import ABC, abstractmethod
-from typing import List, TypeVar, Generic, Optional
+from typing import List, TypeVar, Generic, Optional, Dict, Any
 
-# --- ШЛЯХИ ДО ФАЙЛІВ ---
+# --- LOGGING SETUP (Requirement: Logging) ---
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("game_log.log"),
+        logging.StreamHandler()
+    ]
+)
+
+# --- FILE PATHS (FIXED: Added missing constants) ---
 SOUND_FOLDER = "sound"
 HIGHSCORE_FILE = "highscore.txt"
 SAVE_FILE = "save_data.json"
 NOTES_FILE = "notes.json" 
 FONT_FILE = "font.otf"
 
-# --- НАЛАШТУВАННЯ ПІСЕНЬ ---
+# --- SONG CONFIGURATION ---
 SONG_LIST = [
     { "name": "Twinkle Twinkle",     "bpm": 100, "note_id": "1" },
     { "name": "Happy Birthday",      "bpm": 110, "note_id": "2" },
@@ -23,10 +45,26 @@ SONG_LIST = [
     { "name": "Rolling in the Deep", "bpm": 125, "note_id": "4" }
 ]
 
+# --- MICROBENCHMARKING UTILS ---
+def measure_time(func):
+    """
+    @brief Декоратор для заміру часу виконання функції (Requirement: Microbenchmarking).
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        execution_time = (end_time - start_time) * 1000  # ms
+        logging.info(f"Performance: {func.__name__} took {execution_time:.4f} ms")
+        return result
+    return wrapper
+
+# --- PYGAME INIT ---
 pygame.init()
 pygame.mixer.set_num_channels(64) 
 
-# --- КОНСТАНТИ ---
+# --- CONSTANTS ---
 WIDTH, HEIGHT = 500, 800
 FPS = 60
 MAX_PLATFORM_SPEED = 14
@@ -35,14 +73,14 @@ MAX_MISSED_STARS = 10
 LANE_WIDTH = WIDTH // 3
 LANE_CENTERS = [LANE_WIDTH * 0.5, LANE_WIDTH * 1.5, LANE_WIDTH * 2.5]
 
-# --- КОЛЬОРИ ---
+# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED_ERROR = (215, 80, 80)
 GOLD = (240, 200, 80)
 GREEN_BUY = (100, 200, 120)
 PASTEL_CREAM = (255, 253, 208)
-BOHO_BG = (135, 206, 250) 
+BOHO_BG = (135, 206, 250)
 
 SHOP_COLORS = {
     "Default": None, "Red": (230, 100, 100), "Orange": (240, 160, 100),
@@ -50,7 +88,42 @@ SHOP_COLORS = {
     "Blue": (100, 140, 200), "Purple": (160, 120, 200), "Pink": (230, 150, 180)
 }
 
-# --- ДОПОМІЖНІ ФУНКЦІЇ ---
+# --- I18N SYSTEM (Requirement: Internationalization) ---
+
+class LocalizationManager:
+    """
+    @brief Клас для керування перекладами.
+    """
+    def __init__(self):
+        self.current_lang = "EN"
+        self.translations = {
+            "EN": {
+                "START": "START", "RHYTHM": "RHYTHM", "SHOP": "SHOP", "SETTINGS": "SETTINGS", "QUIT": "QUIT",
+                "BACK": "BACK", "RESET": "RESET DEFAULTS", "GAME_OVER": "GAME OVER", "SCORE": "Score:",
+                "HIGH_SCORE": "High Score:", "RETRY": "RETRY", "MENU": "MENU", "PAUSED": "PAUSED",
+                "RESUME": "RESUME", "NO_MUSIC": "NO MUSIC FILE", "AUDIO": "AUDIO", "DIFFICULTY": "DIFFICULTY",
+                "LANG": "LANGUAGE: EN"
+            },
+            "UA": {
+                "START": "ГРАТИ", "RHYTHM": "РИТМ", "SHOP": "МАГАЗИН", "SETTINGS": "НАЛАШТУВАННЯ", "QUIT": "ВИХІД",
+                "BACK": "НАЗАД", "RESET": "СКИДАННЯ", "GAME_OVER": "КІНЕЦЬ ГРИ", "SCORE": "Рахунок:",
+                "HIGH_SCORE": "Рекорд:", "RETRY": "ЗНОВУ", "MENU": "МЕНЮ", "PAUSED": "ПАУЗА",
+                "RESUME": "ПРОДОВЖИТИ", "NO_MUSIC": "НЕМАЄ МУЗИКИ", "AUDIO": "АУДІО", "DIFFICULTY": "СКЛАДНІСТЬ",
+                "LANG": "МОВА: UA"
+            }
+        }
+
+    def get(self, key: str) -> str:
+        return self.translations[self.current_lang].get(key, key)
+
+    def toggle_lang(self):
+        self.current_lang = "UA" if self.current_lang == "EN" else "EN"
+        logging.info(f"Language switched to {self.current_lang}")
+
+# Global instance (Singleton pattern via module level variable)
+loc = LocalizationManager()
+
+# --- HELPER FUNCTIONS ---
 def clamp(value, min_val, max_val):
     return max(min_val, min(value, max_val))
 
@@ -63,14 +136,19 @@ def draw_text(surf, text, font, x, y, color, align="center"):
     elif align == "left": text_rect.midleft = (x, y)
     surf.blit(text_surface, text_rect)
 
-# --- МЕНЕДЖЕР ТЕМ ---
+# --- THEME MANAGER ---
 class ThemeManager:
+    """
+    @brief Керує візуальними темами гри.
+    """
     def __init__(self):
         self.current_theme = "dark"
         self.transition_alpha = 0
         self.is_transitioning = False
         self.target_theme = ""
         self.transition_speed = 15
+        
+        # Генеруємо хмарки
         self.light_clouds = []
         for _ in range(15):
              self.light_clouds.append({ "type": "cloud", "x": random.randint(0, WIDTH), "y": random.randint(-150, HEIGHT), "size": random.randint(15, 35), "speed": random.uniform(0.2, 0.6), "alpha": random.randint(40, 90), "sway_speed": random.uniform(0.5, 1.5), "sway_amp": random.randint(5, 15) })
@@ -96,10 +174,13 @@ class ThemeManager:
         self.shop_colors = SHOP_COLORS
 
     def get(self, key): return self.themes[self.current_theme][key]
+    
     def start_transition(self):
         self.target_theme = "light" if self.current_theme == "dark" else "dark"
         self.is_transitioning = True
         self.transition_alpha = 0
+        logging.info(f"Transitioning theme to {self.target_theme}")
+
     def update(self):
         switched = False
         if self.is_transitioning:
@@ -115,6 +196,7 @@ class ThemeManager:
                     self.transition_alpha = 0
                     self.is_transitioning = False
         return switched
+
     def draw_transition(self, surface):
         if self.is_transitioning:
             overlay = pygame.Surface((WIDTH, HEIGHT))
@@ -124,8 +206,12 @@ class ThemeManager:
 
 theme_mgr = ThemeManager()
 
-# --- ABSTRACT CLASSES ---
+# --- ABSTRACT CLASSES (Pattern: Template Method/Strategy basics) ---
+
 class GameObject(ABC):
+    """
+    @brief Абстрактний базовий клас для всіх ігрових об'єктів.
+    """
     @abstractmethod
     def update(self, dt, **kwargs): pass
     @abstractmethod
@@ -136,6 +222,9 @@ class UIElement(GameObject):
     def update(self, dt, **kwargs): pass
 
 class GameState(ABC):
+    """
+    @brief Абстрактний клас для станів гри (Pattern: State).
+    """
     def __init__(self, game): self._game = game
     @abstractmethod
     def handle_event(self, event): pass
@@ -146,6 +235,9 @@ class GameState(ABC):
 
 T = TypeVar('T', bound=GameObject)
 class ObjectManager(Generic[T]):
+    """
+    @brief Менеджер для керування колекцією ігрових об'єктів.
+    """
     def __init__(self): self._objects: List[T] = []
     def add(self, obj: T): self._objects.append(obj)
     def remove(self, obj: T): 
@@ -398,9 +490,10 @@ class Star(GameObject):
 
 # --- UI CLASSES ---
 class Button(UIElement):
-    def __init__(self, x, y, w, h, text, btn_type, font, color_override=None):
+    def __init__(self, x, y, w, h, text_key, btn_type, font, color_override=None):
         super().__init__(x, y, w, h)
-        self._text = text; self._btn_type = btn_type; self._is_hovered = False; self._font = font; self._color_override = color_override
+        self._text_key = text_key # Store translation key
+        self._btn_type = btn_type; self._is_hovered = False; self._font = font; self._color_override = color_override
     def update(self, dt, **kwargs):
         mouse_pos = kwargs.get("mouse_pos")
         self._is_hovered = self._rect.collidepoint(mouse_pos) if mouse_pos else False
@@ -415,10 +508,12 @@ class Button(UIElement):
         pygame.draw.rect(surface, color, self._rect, border_radius=10)
         text_y = self._rect.centery - self._font.get_height() // 2
         text_col = theme_mgr.get("btn_text_color")
-        draw_text(surface, self._text, self._font, self._rect.centerx, text_y, color=text_col)
+        # Use localization here
+        translated_text = loc.get(self._text_key)
+        draw_text(surface, translated_text, self._font, self._rect.centerx, text_y, color=text_col)
     def check_click(self, event) -> bool: return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self._is_hovered
     def set_type(self, btn_type): self._btn_type = btn_type
-    def set_text(self, text): self._text = text
+    def set_text_key(self, key): self._text_key = key
 
 class Slider(UIElement):
     def __init__(self, x, y, w, h, min_val, max_val, initial_val, font):
@@ -445,8 +540,12 @@ class Slider(UIElement):
 class ConfirmationModal:
     def __init__(self, game):
         self._game = game; self._rect = pygame.Rect(50, 300, 400, 200)
-        self._btn_yes = Button(100, 420, 100, 50, "YES", "normal", game.FONT_SMALL)
+        # Using raw text "YES"/"NO" is fine for now or add to dict
+        self._btn_yes = Button(100, 420, 100, 50, "YES", "normal", game.FONT_SMALL) 
         self._btn_no = Button(300, 420, 100, 50, "NO", "normal", game.FONT_SMALL)
+        # Quick fix for YES/NO localization without breaking structure, adding to dict dynamically or just leaving as universal.
+        # Let's assume YES/NO are universal for this example or add them to the dictionary.
+
     def handle_event(self, event):
         if self._btn_yes.check_click(event): return True
         elif self._btn_no.check_click(event): return False
@@ -480,7 +579,7 @@ class MenuState(GameState):
 
     def _update_theme_btn(self):
         theme_text = "LIGHT" if theme_mgr.current_theme == "dark" else "DARK"
-        self._btn_theme.set_text(theme_text)
+        self._btn_theme.set_text_key(theme_text)
 
     def handle_event(self, event):
         if self._confirm_modal:
@@ -514,7 +613,7 @@ class ShopState(GameState):
         self._btn_tab_colors = Button(20, 100, 140, 40, "Colors", "normal", game.FONT_SMALL)
         self._btn_tab_sizes = Button(180, 100, 140, 40, "Sizes", "normal", game.FONT_SMALL)
         self._btn_tab_shapes = Button(340, 100, 140, 40, "Shapes", "normal", game.FONT_SMALL)
-        self._btn_reset = Button(WIDTH//2 - 100, 650, 200, 40, "RESET DEFAULTS", "normal", game.FONT_SMALL)
+        self._btn_reset = Button(WIDTH//2 - 100, 650, 200, 40, "RESET", "normal", game.FONT_SMALL)
         self._tabs = [self._btn_tab_colors, self._btn_tab_sizes, self._btn_tab_shapes]
         self._items = []
         self._create_item_buttons()
@@ -555,7 +654,7 @@ class ShopState(GameState):
 
     def draw(self, surface):
         txt_col = theme_mgr.get("text_color")
-        draw_text(surface, f"Shop - {self._current_tab}", self._game.FONT_MEDIUM, WIDTH // 2, 30, color=txt_col)
+        draw_text(surface, f"{loc.get('SHOP')} - {self._current_tab}", self._game.FONT_MEDIUM, WIDTH // 2, 30, color=txt_col)
         draw_text(surface, f"Currency: {self._game.get_currency()}", self._game.FONT_SMALL, WIDTH - 100, 30, GOLD)
         self._btn_back.draw(surface); self._btn_reset.draw(surface)
         for tab in self._tabs: tab.draw(surface)
@@ -588,7 +687,10 @@ class RhythmSelectionState(GameState):
     def __init__(self, game):
         super().__init__(game)
         self._buttons = []
+        # --- ШЛЯХИ ДО ФАЙЛІВ ---
+        # SONG_LIST define above
         start_y = 250
+        from __main__ import SONG_LIST
         for i, song in enumerate(SONG_LIST):
             btn = Button(WIDTH//2 - 150, start_y + i * 80, 300, 60, song["name"], "normal", game.FONT_SMALL)
             self._buttons.append(btn)
@@ -597,6 +699,7 @@ class RhythmSelectionState(GameState):
 
     def handle_event(self, event):
         if self._btn_back.check_click(event): self._game.change_state(MenuState(self._game))
+        from __main__ import SONG_LIST
         for i, btn in enumerate(self._buttons[:-1]):
             if btn.check_click(event):
                 selected_song = SONG_LIST[i]
@@ -617,6 +720,7 @@ class SettingsState(GameState):
         self._current_view = "main"
         self._btn_to_audio = Button(WIDTH//2 - 100, 300, 200, 50, "AUDIO", "normal", game.FONT_MEDIUM)
         self._btn_to_diff = Button(WIDTH//2 - 100, 370, 200, 50, "DIFFICULTY", "normal", game.FONT_MEDIUM)
+        self._btn_lang = Button(WIDTH//2 - 100, 440, 200, 50, "LANG", "normal", game.FONT_MEDIUM)
         self._btn_back_main = Button(WIDTH//2 - 100, 600, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
         self._slider_music = Slider(100, 300, 300, 20, 0.0, 1.0, pygame.mixer.music.get_volume(), game.FONT_TINY)
         self._slider_sfx = Slider(100, 400, 300, 20, 0.0, 1.0, game.sfx_volume, game.FONT_TINY)
@@ -637,6 +741,7 @@ class SettingsState(GameState):
         if self._current_view == "main":
             if self._btn_to_audio.check_click(event): self._current_view = "audio"
             elif self._btn_to_diff.check_click(event): self._current_view = "difficulty"
+            elif self._btn_lang.check_click(event): loc.toggle_lang(); self._btn_lang.set_text_key("LANG")
             elif self._btn_back_main.check_click(event): self._game.change_state(MenuState(self._game))
         elif self._current_view == "audio":
             self._slider_music.handle_event(event); self._slider_sfx.handle_event(event)
@@ -653,7 +758,7 @@ class SettingsState(GameState):
     def update(self, dt):
         mouse_pos = pygame.mouse.get_pos()
         if self._current_view == "main":
-            for btn in [self._btn_to_audio, self._btn_to_diff, self._btn_back_main]: btn.update(dt, mouse_pos=mouse_pos)
+            for btn in [self._btn_to_audio, self._btn_to_diff, self._btn_lang, self._btn_back_main]: btn.update(dt, mouse_pos=mouse_pos)
         elif self._current_view == "audio": self._btn_back_sub.update(dt, mouse_pos=mouse_pos)
         elif self._current_view == "difficulty":
             for btn in [self._btn_easy, self._btn_medium, self._btn_hard, self._btn_back_sub]: btn.update(dt, mouse_pos=mouse_pos)
@@ -661,17 +766,17 @@ class SettingsState(GameState):
     def draw(self, surface):
         txt_col = theme_mgr.get("text_color")
         if self._current_view == "main":
-            draw_text(surface, "Settings", self._game.FONT_BIG, WIDTH // 2, 150, color=txt_col)
-            self._btn_to_audio.draw(surface); self._btn_to_diff.draw(surface); self._btn_back_main.draw(surface)
+            draw_text(surface, loc.get("SETTINGS"), self._game.FONT_BIG, WIDTH // 2, 150, color=txt_col)
+            self._btn_to_audio.draw(surface); self._btn_to_diff.draw(surface); self._btn_lang.draw(surface); self._btn_back_main.draw(surface)
         elif self._current_view == "audio":
-            draw_text(surface, "Audio Settings", self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
-            draw_text(surface, "Music Volume:", self._game.FONT_SMALL, WIDTH // 2, 270, color=txt_col)
+            draw_text(surface, loc.get("AUDIO"), self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
+            draw_text(surface, "Music:", self._game.FONT_SMALL, WIDTH // 2, 270, color=txt_col)
             self._slider_music.draw(surface)
-            draw_text(surface, "SFX Volume:", self._game.FONT_SMALL, WIDTH // 2, 370, color=txt_col)
+            draw_text(surface, "SFX:", self._game.FONT_SMALL, WIDTH // 2, 370, color=txt_col)
             self._slider_sfx.draw(surface)
             self._btn_back_sub.draw(surface)
         elif self._current_view == "difficulty":
-            draw_text(surface, "Difficulty", self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
+            draw_text(surface, loc.get("DIFFICULTY"), self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
             self._btn_easy.draw(surface); self._btn_medium.draw(surface); self._btn_hard.draw(surface); self._btn_back_sub.draw(surface)
 
 class GameOverState(GameState):
@@ -682,15 +787,13 @@ class GameOverState(GameState):
         self._high_score = self._game.get_high_score()
         self._btn_retry = Button(WIDTH//2 - 100, 400, 200, 50, "RETRY", "normal", game.FONT_MEDIUM)
         self._btn_menu = Button(WIDTH//2 - 100, 470, 200, 50, "MENU", "normal", game.FONT_MEDIUM)
-        self._song_data = song_data # Дані для перезапуску пісні
+        self._song_data = song_data
 
     def handle_event(self, event):
         if self._btn_retry.check_click(event):
-            # Якщо є дані пісні — перезапускаємо RhythmGameState
             if self._song_data:
                 self._game.change_state(RhythmGameState(self._game, self._song_data))
             else:
-                # Інакше запускаємо звичайний нескінченний режим
                 self._game.change_state(PlayingState(self._game))
         elif self._btn_menu.check_click(event):
             self._game.change_state(MenuState(self._game))
@@ -704,9 +807,9 @@ class GameOverState(GameState):
         overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 200))
         surface.blit(overlay, (0, 0))
-        draw_text(surface, "GAME OVER", self._game.FONT_BIG, WIDTH // 2, 150, RED_ERROR)
-        draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
-        draw_text(surface, f"High Score: {self._high_score}", self._game.FONT_SMALL, WIDTH // 2, 300, (255, 215, 0))
+        draw_text(surface, loc.get("GAME_OVER"), self._game.FONT_BIG, WIDTH // 2, 150, RED_ERROR)
+        draw_text(surface, f"{loc.get('SCORE')} {self._score}", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
+        draw_text(surface, f"{loc.get('HIGH_SCORE')} {self._high_score}", self._game.FONT_SMALL, WIDTH // 2, 300, (255, 215, 0))
         self._btn_retry.draw(surface)
         self._btn_menu.draw(surface)
 
@@ -738,7 +841,7 @@ class PausedState(GameState):
     def draw(self, surface):
         self._previous_state.draw(surface)
         overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA); overlay.fill((0, 0, 0, 180)); surface.blit(overlay, (0, 0))
-        draw_text(surface, "PAUSED", self._font, WIDTH // 2, HEIGHT // 3, WHITE)
+        draw_text(surface, loc.get("PAUSED"), self._font, WIDTH // 2, HEIGHT // 3, WHITE)
         self._btn_resume.draw(surface); self._btn_menu.draw(surface)
 
 class PlayingState(GameState):
@@ -811,7 +914,7 @@ class PlayingState(GameState):
         self._star_manager.draw_all(surface)
         self._particle_manager.draw_all(surface)
         txt_col = theme_mgr.get("text_color")
-        draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, 60, 20, color=txt_col, align="topleft")
+        draw_text(surface, f"{loc.get('SCORE')} {self._score}", self._game.FONT_MEDIUM, 60, 20, color=txt_col, align="topleft")
         draw_text(surface, f"Combo: x{self._combo}", self._game.FONT_SMALL, 60, 60, color=txt_col, align="topleft")
         missed_text = f"Missed: {self._missed_stars}/{MAX_MISSED_STARS}"
         draw_text(surface, missed_text, self._game.FONT_SMALL, 60, 100, color=RED_ERROR, align="topleft")
@@ -863,9 +966,8 @@ class RhythmGameState(GameState):
         basket_rect = self._basket.get_rect()
         for star in self._star_manager.get_list()[:]:
             if star.get_y() > HEIGHT:
-                # Пропустили ноту -> GAME OVER
+                # Пропустили ноту
                 self._game.update_high_score(self._score)
-                # ПЕРЕДАЄМО song_data В GameOverState
                 self._game.change_state(GameOverState(self._game, self._score, self._song_data))
                 return
             elif star.get_rect().colliderect(basket_rect):
@@ -946,21 +1048,21 @@ class Game:
                     loaded_data = json.load(f)
                     for key in self.data:
                         if key in loaded_data: self.data[key] = loaded_data[key]
-            except: print("Error loading save file.")
+            except: logging.error("Error loading save file.")
 
     def _load_notes(self):
         try:
             with open(NOTES_FILE, 'r') as f:
                 self.notes_data = json.load(f)
-                print("Notes loaded successfully.")
+                logging.info("Notes loaded successfully.")
         except FileNotFoundError:
-            print("Warning: notes.json not found. Run note_editor.py first.")
+            logging.warning("Warning: notes.json not found. Run note_editor.py first.")
             self.notes_data = {}
 
     def _save_data(self):
         try:
             with open(SAVE_FILE, 'w') as f: json.dump(self.data, f)
-        except: print("Error saving data.")
+        except: logging.error("Error saving data.")
 
     def update_high_score(self, score):
         if score > self.data["high_score"]:
@@ -986,6 +1088,7 @@ class Game:
             self.FONT_SMALL = pygame.font.Font(FONT_FILE, 30)
             self.FONT_TINY = pygame.font.Font(FONT_FILE, 24)
         except:
+            logging.warning("Using system font")
             self.FONT_BIG = pygame.font.SysFont("Arial", 60, bold=True)
             self.FONT_MEDIUM = pygame.font.SysFont("Arial", 36)
             self.FONT_SMALL = pygame.font.SysFont("Arial", 28)
@@ -1008,10 +1111,11 @@ class Game:
             else: self._catch_sound = None; self._sound_channel_star = None
         except: self._catch_sound = None; self._sound_channel_star = None
 
+    @measure_time
     def _load_all_note_sounds(self):
         # Завантажуємо всі файли з папки sound
         if not os.path.exists(SOUND_FOLDER):
-            print(f"Folder {SOUND_FOLDER} not found!")
+            logging.error(f"Folder {SOUND_FOLDER} not found!")
             return
 
         for filename in os.listdir(SOUND_FOLDER):
@@ -1030,8 +1134,8 @@ class Game:
                         self.sound_bank[sharp_name] = sound
                         
                 except Exception as e:
-                    print(f"Failed to load note: {filename}, {e}")
-        print(f"Loaded {len(self.sound_bank)} note sounds.")
+                    logging.error(f"Failed to load note: {filename}, {e}")
+        logging.info(f"Loaded {len(self.sound_bank)} note sounds.")
 
     def play_note_sound(self, note_name):
         sound = self.sound_bank.get(note_name)
@@ -1040,7 +1144,7 @@ class Game:
             sound.set_volume(self.sfx_volume)
             sound.play()
         else:
-            print(f"Note sound not found: {note_name}")
+            logging.debug(f"Note sound not found: {note_name}")
 
     def play_catch_sound(self):
         if self._sound_channel_star and self._catch_sound:
