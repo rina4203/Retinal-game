@@ -11,25 +11,28 @@ from typing import List, TypeVar, Generic, Optional
 # --- ШЛЯХИ ДО ФАЙЛІВ ---
 SOUND_FOLDER = "sound"
 HIGHSCORE_FILE = "highscore.txt"
-NOTES_FILE = "notes.json"
+SAVE_FILE = "save_data.json"
+FONT_FILE = "font.otf"
+
+# --- НАЛАШТУВАННЯ ПІСЕНЬ ---
+SONG_LIST = [
+    {
+        "name": "My Track",       
+        "file": "song.mp3",       
+        "bpm": 120,               
+        "offset": 0.0,            
+        "difficulty": "Custom"
+    }
+]
 
 pygame.init()
 
 # --- КОНСТАНТИ ---
 WIDTH, HEIGHT = 500, 800
 FPS = 60
-MAX_PLATFORM_SPEED = 16
+MAX_PLATFORM_SPEED = 14
 NUM_BG_STARS = 200
-MAX_MISSED_STARS = 3 
-
-# Глобальний список назв пісень
-SONG_NAMES_MAP = {
-    "1": "Twinkle Twinkle",
-    "2": "Happy Birthday",
-    "3": "Jan Gan Man",
-    "4": "O Mere Dil Ke",
-    "5": "Naruto Theme"
-}
+MAX_MISSED_STARS = 10
 
 # Зони для ритм гри
 LANE_WIDTH = WIDTH // 3
@@ -38,10 +41,9 @@ LANE_CENTERS = [LANE_WIDTH * 0.5, LANE_WIDTH * 1.5, LANE_WIDTH * 2.5]
 # --- КОЛЬОРИ ---
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-RED_ERROR = (255, 50, 50)
-GOLD_WIN = (255, 215, 0)
-PASTEL_CREAM = (255, 255, 204)
-PASTEL_PEACH = (255, 229, 180)
+RED_ERROR = (215, 80, 80)
+GOLD = (240, 200, 80)
+GREEN_BUY = (100, 200, 120)
 
 # --- ДОПОМІЖНІ ФУНКЦІЇ ---
 def clamp(value, min_val, max_val):
@@ -71,54 +73,74 @@ class ThemeManager:
 
         self.themes = {
             "dark": {
-                "bg_color": (10, 10, 40),
-                "text_color": (255, 255, 255),
+                "bg_color": (20, 20, 45),
+                "text_color": (240, 240, 250),
                 "platform_color": (100, 149, 237),
                 "particle_color": (255, 255, 204),
                 "btn_color": (60, 40, 90),
                 "btn_hover": (80, 60, 110),
                 "btn_active": (100, 70, 140),
                 "btn_text_color": (255, 255, 255),
-                "slider_line": (200, 200, 200),
+                "slider_line": (150, 150, 180),
                 "slider_knob": (255, 255, 255),
-                "modal_bg": (20, 20, 50),
-                "waves": [
-                    {"color": (75, 0, 130, 100), "amp": 70, "freq": 0.012, "speed": 0.3, "y": 610},
-                    {"color": (106, 90, 205, 100), "amp": 50, "freq": 0.007, "speed": -0.45, "y": 620},
-                    {"color": (60, 40, 120, 100), "amp": 30, "freq": 0.01, "speed": 0.6, "y": 600}
+                "modal_bg": (30, 30, 60),
+                # Темна тема: Хвилі
+                "bg_elements": [
+                    {"type": "wave", "color": (60, 20, 80, 100), "amp": 70, "freq": 0.012, "speed": 0.3, "y": 610},
+                    {"type": "wave", "color": (80, 60, 140, 100), "amp": 50, "freq": 0.007, "speed": -0.45, "y": 620},
+                    {"type": "wave", "color": (40, 40, 100, 100), "amp": 30, "freq": 0.01, "speed": 0.6, "y": 600}
                 ],
                 "has_bg_stars": True,
-                "has_bg_bokeh": False, 
-                "show_waves": True,    # ХВИЛІ Є
                 "star_style": "glow" 
             },
             "light": {
-                "bg_color": (75, 123, 224),
+                # SKY BLUE / BOHO SKY
+                "bg_color": (135, 206, 250), 
                 "text_color": (25, 25, 70),
-                "platform_color": (10, 10, 80),
+                
+                "platform_color": (20, 50, 100), # Темно-синій
                 "particle_color": None,
-                "btn_color": (10, 10, 80),
-                "btn_hover": (30, 30, 120),
+                
+                "btn_color": (20, 50, 100), # Темно-синій
+                "btn_hover": (40, 70, 130),
                 "btn_active": (65, 105, 225),
                 "btn_text_color": (255, 255, 255),
-                "slider_line": (10, 10, 80),
-                "slider_knob": (10, 10, 80),
-                "modal_bg": (200, 220, 255),
-                "waves": [ # Залишаємо список, щоб не було помилок, але малювати не будемо
-                    {"color": (0,0,0,0), "amp": 0, "freq": 0, "speed": 0, "y": 0},
-                    {"color": (0,0,0,0), "amp": 0, "freq": 0, "speed": 0, "y": 0},
-                    {"color": (0,0,0,0), "amp": 0, "freq": 0, "speed": 0, "y": 0}
+                
+                "slider_line": (255, 255, 255),
+                "slider_knob": (20, 50, 100),
+                "modal_bg": (135, 206, 250),
+                
+                # Світла тема: ВЕЛИКІ БІЛІ КРУГИ (ХМАРИНКИ)
+                # Вони виглядають як "збільшені зорі з темної теми" (центр + ореол)
+                "bg_elements": [
+                    {"type": "cloud", "x": 100, "y": 650, "size": 120, "speed": 0.2},
+                    {"type": "cloud", "x": 400, "y": 700, "size": 150, "speed": -0.15},
+                    {"type": "cloud", "x": 250, "y": 780, "size": 180, "speed": 0.1}
                 ],
                 "has_bg_stars": False,
-                "has_bg_bokeh": True, 
-                "show_waves": False,   # ХВИЛЬ НЕМАЄ
-                "star_style": "glow" 
+                "star_style": "ball"
             }
         }
         
         self.light_theme_star_colors = [
-            (255, 255, 0), (255, 0, 0), (0, 255, 0), (255, 0, 255)
+            (255, 105, 180), # Pink
+            (50, 205, 50),   # Green
+            (255, 215, 0),   # Gold
+            (255, 69, 0)     # Red-Orange
         ]
+        
+        # Кольори для магазину
+        self.shop_colors = {
+            "Default": None,
+            "Red": (220, 60, 60),
+            "Orange": (255, 140, 0),
+            "Yellow": (255, 215, 0),
+            "Green": (50, 205, 50),
+            "Cyan": (0, 255, 255),
+            "Blue": (30, 144, 255),
+            "Purple": (138, 43, 226),
+            "Pink": (255, 105, 180)
+        }
 
     def get(self, key):
         return self.themes[self.current_theme][key]
@@ -195,37 +217,8 @@ class ObjectManager(Generic[T]):
 
 # --- ІГРОВІ ОБ'ЄКТИ ---
 
-class BackgroundBokeh(GameObject):
-    def __init__(self):
-        self._x = random.randint(0, WIDTH)
-        self._y = random.randint(0, HEIGHT)
-        self._radius = random.randint(30, 80)
-        self._speed_y = random.uniform(-20, -5)
-        self._speed_x = random.uniform(-5, 5)
-        
-        base_col = random.choice([(255, 255, 220), (220, 255, 255), (255, 255, 255)])
-        self._alpha = random.randint(20, 50)
-        self._color = (*base_col, self._alpha)
-
-    def update(self, dt, **kwargs):
-        self._y += self._speed_y * dt
-        self._x += self._speed_x * dt
-        
-        if self._y < -self._radius:
-            self._y = HEIGHT + self._radius
-            self._x = random.randint(0, WIDTH)
-            
-        if self._x < -self._radius: self._x = WIDTH + self._radius
-        elif self._x > WIDTH + self._radius: self._x = -self._radius
-
-    def draw(self, surface):
-        s = pygame.Surface((self._radius*2, self._radius*2), pygame.SRCALPHA)
-        pygame.draw.circle(s, self._color, (self._radius, self._radius), self._radius)
-        pygame.draw.circle(s, (*self._color[:3], self._alpha + 20), (self._radius, self._radius), self._radius * 0.6)
-        surface.blit(s, (self._x - self._radius, self._y - self._radius))
-
-
 class ProceduralWave(GameObject):
+    """Малює хвилі АБО декоративні елементи фону (хмаринки)."""
     def __init__(self, index):
         self._index = index
         self._phase = random.uniform(0, 2 * math.pi)
@@ -233,12 +226,20 @@ class ProceduralWave(GameObject):
         self._update_params_from_theme()
 
     def _update_params_from_theme(self):
-        params = theme_mgr.get("waves")[self._index]
-        self._color = params["color"]
-        self._amplitude = params["amp"]
-        self._frequency = params["freq"]
-        self._speed = params["speed"]
-        self._y_offset = params["y"]
+        params = theme_mgr.get("bg_elements")[self._index]
+        self._type = params["type"] # "wave" or "cloud"
+        
+        if self._type == "wave":
+            self._color = params["color"]
+            self._amplitude = params["amp"]
+            self._frequency = params["freq"]
+            self._speed = params["speed"]
+            self._y_offset = params["y"]
+        elif self._type == "cloud":
+            self._x_center = params["x"]
+            self._y_center = params["y"]
+            self._radius = params["size"]
+            self._speed = params["speed"]
 
     def update(self, dt, **kwargs):
         if kwargs.get("theme_switched"):
@@ -247,13 +248,31 @@ class ProceduralWave(GameObject):
 
     def draw(self, surface):
         self._surface.fill((0, 0, 0, 0))
-        points = []
-        for x in range(WIDTH + 1):
-            y = self._amplitude * math.sin(self._frequency * x + self._phase) + self._y_offset
-            points.append((x, y))
-        points.append((WIDTH, HEIGHT))
-        points.append((0, HEIGHT))
-        pygame.draw.polygon(self._surface, self._color, points)
+        
+        if self._type == "wave":
+            points = []
+            for x in range(WIDTH + 1):
+                y = self._amplitude * math.sin(self._frequency * x + self._phase) + self._y_offset
+                points.append((x, y))
+            points.append((WIDTH, HEIGHT))
+            points.append((0, HEIGHT))
+            pygame.draw.polygon(self._surface, self._color, points)
+            
+        elif self._type == "cloud":
+            # Малюємо хмаринку в стилі зірки (ореол + центр)
+            # Рух
+            offset = math.sin(self._phase) * 15
+            
+            # Колір білий, прозорий
+            outer_color = (255, 255, 255, 80)  # Прозоріше
+            inner_color = (255, 255, 255, 150) # Менш прозоре
+            
+            outer_radius = int(self._radius + offset)
+            inner_radius = int(outer_radius * 0.6)
+            
+            pygame.draw.circle(self._surface, outer_color, (self._x_center, self._y_center), outer_radius)
+            pygame.draw.circle(self._surface, inner_color, (self._x_center, self._y_center), inner_radius)
+
         surface.blit(self._surface, (0, 0))
 
 class Particle(GameObject):
@@ -283,61 +302,109 @@ class Particle(GameObject):
             pygame.draw.circle(surface, self._color, (self._x, self._y), int(self._size))
 
 class Basket(GameObject):
-    def __init__(self):
-        self._width = 150
+    def __init__(self, game):
+        self._game = game
+        self._base_width = 150 
         self._height = 20
-        self._x = WIDTH // 2 - self._width // 2
+        self._x = WIDTH // 2 - self._base_width // 2
         self._y = HEIGHT - 80
         self._base_vel = 9
         self._vel = self._base_vel
 
+    def _get_current_properties(self):
+        size_mod = self._game.get_equipped("size") 
+        color_name = self._game.get_equipped("color")
+        width = self._base_width + (size_mod * 30)
+        color = theme_mgr.shop_colors.get(color_name)
+        if color is None:
+            color = theme_mgr.get("platform_color")
+        return width, color
+
     def update(self, dt, **kwargs):
+        width, _ = self._get_current_properties()
         keys = kwargs.get("keys")
         speed_multiplier = kwargs.get("speed_multiplier", 1.0)
         if not keys: return
+
         calculated_vel = self._base_vel + (speed_multiplier - 1.0) * 3.0
         self._vel = min(MAX_PLATFORM_SPEED, calculated_vel)
+
         if keys[pygame.K_LEFT] and self._x > 0:
             self._x -= self._vel
-        if keys[pygame.K_RIGHT] and self._x < WIDTH - self._width:
+        if keys[pygame.K_RIGHT] and self._x < WIDTH - width:
             self._x += self._vel
 
     def get_vel(self) -> float: return self._vel
+    
     def get_rect(self) -> pygame.Rect:
-        return pygame.Rect(self._x, self._y, self._width, self._height)
+        width, _ = self._get_current_properties()
+        return pygame.Rect(self._x, self._y, width, self._height)
+
     def draw(self, surface):
-        color = theme_mgr.get("platform_color")
-        pygame.draw.rect(surface, color, self.get_rect(), border_radius=5)
+        width, color = self._get_current_properties()
+        rect = pygame.Rect(self._x, self._y, width, self._height)
+        pygame.draw.rect(surface, color, rect, border_radius=5)
+
+class Currency(GameObject):
+    def __init__(self, speed_multiplier):
+        self._x = random.randint(50, WIDTH - 50)
+        self._y = random.randint(-200, -20)
+        self._speed = 3.0 * speed_multiplier
+        self._size = 20
+        self._angle = 0
+
+    def update(self, dt, **kwargs):
+        speed_multiplier = kwargs.get("speed_multiplier", 1.0)
+        self._y += self._speed * speed_multiplier
+        self._angle += 2
+        
+    def get_y(self) -> float: return self._y
+    def get_rect(self) -> pygame.Rect:
+        return pygame.Rect(self._x - self._size, self._y - self._size, self._size*2, self._size*2)
+
+    def draw(self, surface):
+        if theme_mgr.current_theme == "dark":
+            points = [
+                (self._x, self._y - self._size),
+                (self._x + self._size/2, self._y),
+                (self._x, self._y + self._size),
+                (self._x - self._size/2, self._y)
+            ]
+            pygame.draw.polygon(surface, (255, 255, 100), points)
+            pygame.draw.circle(surface, (255, 255, 200, 100), (int(self._x), int(self._y)), int(self._size * 0.8))
+        else:
+            # Квітка для світлої теми
+            for i in range(5):
+                angle_rad = math.radians(self._angle + i * 72)
+                px = self._x + math.cos(angle_rad) * (self._size * 0.6)
+                py = self._y + math.sin(angle_rad) * (self._size * 0.6)
+                pygame.draw.circle(surface, (255, 180, 180), (int(px), int(py)), int(self._size * 0.5))
+            pygame.draw.circle(surface, (255, 220, 100), (int(self._x), int(self._y)), int(self._size * 0.4))
 
 class Star(GameObject):
-    def __init__(self, speed_multiplier, fixed_x=None, note_name=None):
+    def __init__(self, speed_multiplier, game_ref, fixed_x=None):
+        self._game = game_ref
         if fixed_x is not None:
             self._x = fixed_x
-            self._x += random.randint(-15, 15)
-            self._x = clamp(self._x, 20, WIDTH - 20)
             self._is_rhythm_note = True
-            self.note_name = note_name 
         else:
             self._x = random.randint(100, WIDTH - 100)
             self._is_rhythm_note = False
-            self.note_name = None
             
         self._y = random.randint(-200, -20)
         self._z = random.uniform(0.1, 1.0)
         self._base_speed = random.uniform(1.4, 1.6)
         self._vel = self._base_speed * speed_multiplier
-        
-        self._base_size = 9 + self._z * 8 
-        
+        self._base_size = 5 + self._z * 5 
         self._points = int(15 - (self._z * 10))
         self._blink_timer = random.uniform(0, 2 * math.pi)
         self._blink_speed = random.uniform(1.0, 3.0)
-        
         self._trail = [] 
-        self._max_trail_length = 10
+        self._max_trail_length = 15 
         
         if theme_mgr.current_theme == "light":
             self._specific_color = random.choice(theme_mgr.light_theme_star_colors)
+            self._base_size = 25  
         else:
             self._specific_color = None
 
@@ -354,11 +421,10 @@ class Star(GameObject):
         self._y = y
 
     def update(self, dt, **kwargs):
-        speed = kwargs.get("speed", 0) 
         speed_multiplier = kwargs.get("speed_multiplier", 1.0)
-
-        if self._is_rhythm_note:
-             self._vel = speed 
+        rhythm_speed = kwargs.get("speed")
+        if self._is_rhythm_note and rhythm_speed:
+             self._vel = rhythm_speed * speed_multiplier
         else:
              self._vel = self._base_speed * speed_multiplier
         
@@ -378,54 +444,63 @@ class Star(GameObject):
                             self._base_size * 2, self._base_size * 2)
 
     def draw(self, surface):
+        shape = self._game.get_equipped("shape")
         p = clamp((math.sin(self._blink_timer) * 0.5 + 0.5), 0, 1)
         current_size = self._base_size * (0.7 + p * 0.6)
         
-        # ВИБІР КОЛЬОРІВ
         if theme_mgr.current_theme == "light":
             base_color = self._specific_color
-            halo_color = (255, 255, 255) 
+            halo_color = (255, 255, 255)
         else:
-            base_color = PASTEL_PEACH
+            base_color = PASTEL_CREAM
             halo_color = PASTEL_CREAM
 
-        # МАЛЮВАННЯ ХВОСТА
-        if self._is_rhythm_note and len(self._trail) > 1:
-            for i, (tx, ty) in enumerate(self._trail):
-                alpha = int(150 * (i / len(self._trail)))
-                t_size = int(self._base_size * (i / len(self._trail)) * 0.8)
-                if t_size < 1: t_size = 1
-                
-                s_trail = pygame.Surface((t_size*2, t_size*2), pygame.SRCALPHA)
-                pygame.draw.circle(s_trail, (*base_color, alpha), (t_size, t_size), t_size)
-                surface.blit(s_trail, (tx - t_size, ty - t_size))
+        if self._is_rhythm_note:
+             if len(self._trail) > 1:
+                for i, (tx, ty) in enumerate(self._trail):
+                    alpha = int(150 * (i / len(self._trail)))
+                    t_size = int(self._base_size * (i / len(self._trail)) * 0.8)
+                    if t_size < 1: t_size = 1
+                    s_trail = pygame.Surface((t_size*2, t_size*2), pygame.SRCALPHA)
+                    pygame.draw.circle(s_trail, (*base_color, alpha), (t_size, t_size), t_size)
+                    surface.blit(s_trail, (tx - t_size, ty - t_size))
+             pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
+        else:
+            # Endless Mode Shape
+            if shape == "Square":
+                rect = pygame.Rect(self._x - current_size, self._y - current_size, current_size*2, current_size*2)
+                pygame.draw.rect(surface, base_color, rect)
+            elif shape == "Triangle":
+                points = [
+                    (self._x, self._y - current_size),
+                    (self._x + current_size, self._y + current_size),
+                    (self._x - current_size, self._y + current_size)
+                ]
+                pygame.draw.polygon(surface, base_color, points)
+            else: 
+                if theme_mgr.current_theme == "light":
+                     # Світла тема: Просто кольорові круги (Бохо стиль)
+                     pygame.draw.circle(surface, base_color, (self._x, self._y), int(self._base_size))
+                     pygame.draw.circle(surface, (255,255,255), (self._x - self._base_size*0.3, self._y - self._base_size*0.3), int(self._base_size*0.2))
+                else:
+                     # Темна тема: Сяючі зорі
+                     outer_alpha = int(100 * 0.5)
+                     s = pygame.Surface((int(current_size*4), int(current_size*4)), pygame.SRCALPHA)
+                     pygame.draw.circle(s, (*PASTEL_CREAM, outer_alpha), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
+                     pygame.draw.circle(s, (*PASTEL_PEACH, 255), (int(current_size*2), int(current_size*2)), int(current_size))
+                     surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
 
-        # МАЛЮВАННЯ ГОЛОВИ
-        inner_size = int(current_size)
-        outer_size = int(current_size * 1.6)
-        
-        base_alpha = int(100 + 155 * self._z)
-        base_alpha = clamp(base_alpha, 0, 255)
-        outer_alpha = int(base_alpha * 0.5)
-
-        s_size = int(outer_size * 2)
-        if s_size < 1: s_size = 1
-        s = pygame.Surface((s_size, s_size), pygame.SRCALPHA)
-        
-        pygame.draw.circle(s, (*halo_color, outer_alpha), (s_size // 2, s_size // 2), outer_size)
-        pygame.draw.circle(s, (*base_color, base_alpha), (s_size // 2, s_size // 2), inner_size)
-        
-        surface.blit(s, (self._x - s_size // 2, self._y - s_size // 2))
 
 # --- UI CLASSES ---
 
 class Button(UIElement):
-    def __init__(self, x, y, w, h, text, btn_type, font):
+    def __init__(self, x, y, w, h, text, btn_type, font, color_override=None):
         super().__init__(x, y, w, h)
         self._text = text
         self._btn_type = btn_type
         self._is_hovered = False
         self._font = font
+        self._color_override = color_override
 
     def update(self, dt, **kwargs):
         mouse_pos = kwargs.get("mouse_pos")
@@ -435,12 +510,17 @@ class Button(UIElement):
             self._is_hovered = False
 
     def draw(self, surface):
-        if self._btn_type == "active":
-            color = theme_mgr.get("btn_active")
-        elif self._is_hovered:
-            color = theme_mgr.get("btn_hover")
+        if self._color_override:
+             color = self._color_override
+             if self._is_hovered:
+                 color = (min(255, color[0]+20), min(255, color[1]+20), min(255, color[2]+20))
         else:
-            color = theme_mgr.get("btn_color")
+            if self._btn_type == "active":
+                color = theme_mgr.get("btn_active")
+            elif self._is_hovered:
+                color = theme_mgr.get("btn_hover")
+            else:
+                color = theme_mgr.get("btn_color")
             
         pygame.draw.rect(surface, color, self._rect, border_radius=10)
         text_y = self._rect.centery - self._font.get_height() // 2
@@ -534,12 +614,25 @@ class ConfirmationModal:
 class MenuState(GameState):
     def __init__(self, game):
         super().__init__(game)
-        self._btn_start = Button(WIDTH//2 - 100, 300, 200, 50, "START", "normal", game.FONT_MEDIUM)
-        self._btn_rhythm = Button(WIDTH//2 - 100, 370, 200, 50, "RHYTHM", "normal", game.FONT_MEDIUM)
-        self._btn_settings = Button(WIDTH//2 - 100, 440, 200, 50, "SETTINGS", "normal", game.FONT_MEDIUM)
-        self._btn_quit = Button(WIDTH//2 - 100, 510, 200, 50, "QUIT", "normal", game.FONT_MEDIUM)
-        self._buttons = [self._btn_start, self._btn_rhythm, self._btn_settings, self._btn_quit]
+        # 2 COLUMNS LAYOUT with gaps
+        # Left Column
+        self._btn_start = Button(30, 280, 180, 60, "START", "normal", game.FONT_MEDIUM)
+        self._btn_rhythm = Button(30, 360, 180, 60, "RHYTHM", "normal", game.FONT_MEDIUM)
+        self._btn_shop = Button(30, 440, 180, 60, "SHOP", "normal", game.FONT_MEDIUM)
+        
+        # Right Column
+        self._btn_settings = Button(270, 280, 180, 60, "SETTINGS", "normal", game.FONT_MEDIUM)
+        self._btn_theme = Button(270, 360, 180, 60, "", "normal", game.FONT_MEDIUM) # Dynamic text
+        self._btn_quit = Button(270, 440, 180, 60, "QUIT", "normal", game.FONT_MEDIUM)
+        
+        self._buttons = [self._btn_start, self._btn_rhythm, self._btn_shop, self._btn_settings, self._btn_theme, self._btn_quit]
         self._confirm_modal = None
+        
+        self._update_theme_btn()
+
+    def _update_theme_btn(self):
+        theme = theme_mgr.current_theme.upper()
+        self._btn_theme.set_text(f"THEME: {theme}")
 
     def handle_event(self, event):
         if self._confirm_modal:
@@ -551,11 +644,17 @@ class MenuState(GameState):
         if self._btn_start.check_click(event):
             self._game.change_state(PlayingState(self._game))
         elif self._btn_rhythm.check_click(event):
-             self._game.change_state(SongSelectState(self._game))
+             self._game.change_state(RhythmSelectionState(self._game))
+        elif self._btn_shop.check_click(event):
+            self._game.change_state(ShopState(self._game))
         elif self._btn_settings.check_click(event):
             self._game.change_state(SettingsState(self._game))
+        elif self._btn_theme.check_click(event):
+            theme_mgr.start_transition()
         elif self._btn_quit.check_click(event):
             self._confirm_modal = ConfirmationModal(self._game)
+            
+        self._update_theme_btn()
 
     def update(self, dt):
         if self._confirm_modal:
@@ -569,62 +668,167 @@ class MenuState(GameState):
         for btn in self._buttons: btn.draw(surface)
         if self._confirm_modal: self._confirm_modal.draw(surface)
 
-class SongSelectState(GameState):
+class ShopState(GameState):
     def __init__(self, game):
         super().__init__(game)
-        self._btn_back = Button(WIDTH//2 - 100, 700, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
-        self._song_buttons = []
+        self._current_tab = "Colors"
+        self._btn_back = Button(WIDTH//2 - 100, 720, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
         
-        try:
-            with open(NOTES_FILE, 'r') as f:
-                data = json.load(f)
-                keys = sorted(list(data.keys()))
+        self._btn_tab_colors = Button(20, 100, 140, 40, "Colors", "normal", game.FONT_SMALL)
+        self._btn_tab_sizes = Button(180, 100, 140, 40, "Sizes", "normal", game.FONT_SMALL)
+        self._btn_tab_shapes = Button(340, 100, 140, 40, "Shapes", "normal", game.FONT_SMALL)
+        
+        # RESET BUTTON
+        self._btn_reset = Button(WIDTH//2 - 100, 650, 200, 40, "RESET DEFAULTS", "normal", game.FONT_SMALL)
+        
+        self._tabs = [self._btn_tab_colors, self._btn_tab_sizes, self._btn_tab_shapes]
+        self._items = []
+        self._create_item_buttons()
+        
+    def _create_item_buttons(self):
+        self._items = []
+        game = self._game
+        
+        if self._current_tab == "Colors":
+            items = [("Red", 10), ("Orange", 20), ("Yellow", 30), ("Green", 40), 
+                     ("Cyan", 50), ("Blue", 60), ("Purple", 70), ("Pink", 80)]
+            for i, (name, price) in enumerate(items):
+                x = 50 if i % 2 == 0 else 260
+                y = 180 + (i // 2) * 120
+                self._items.append(ShopItemButton(x, y, 190, 100, name, price, "color", game))
+        
+        elif self._current_tab == "Sizes":
+            items = [("Large", 100, 1), ("Huge", 250, 2), ("Gigantic", 500, 3)]
+            for i, (name, price, val) in enumerate(items):
+                y = 180 + i * 120
+                self._items.append(ShopItemButton(100, y, 300, 100, name, price, "size", game, val=val))
                 
-                start_y = 200
-                for i, key in enumerate(keys):
-                    name = SONG_NAMES_MAP.get(key, f"Song {key}")
-                    btn = Button(WIDTH//2 - 125, start_y + (i * 60), 250, 50, name, "normal", game.FONT_SMALL)
-                    self._song_buttons.append((btn, key))
-                    
-        except Exception as e:
-            print(f"Error loading songs for menu: {e}")
+        elif self._current_tab == "Shapes":
+            items = [("Square", 200), ("Triangle", 300)]
+            for i, (name, price) in enumerate(items):
+                y = 180 + i * 120
+                self._items.append(ShopItemButton(100, y, 300, 100, name, price, "shape", game))
 
     def handle_event(self, event):
         if self._btn_back.check_click(event):
             self._game.change_state(MenuState(self._game))
-            return
-
-        for btn, key in self._song_buttons:
-            if btn.check_click(event):
-                self._game.change_state(RhythmGameState(self._game, song_id=key))
+        
+        if self._btn_reset.check_click(event):
+            self._game.equip_item("color", "Default")
+            self._game.equip_item("size", 0)
+            self._game.equip_item("shape", "Star")
+        
+        if self._btn_tab_colors.check_click(event): self._current_tab = "Colors"; self._create_item_buttons()
+        elif self._btn_tab_sizes.check_click(event): self._current_tab = "Sizes"; self._create_item_buttons()
+        elif self._btn_tab_shapes.check_click(event): self._current_tab = "Shapes"; self._create_item_buttons()
+        
+        for item in self._items:
+            item.handle_event(event)
 
     def update(self, dt):
         mouse_pos = pygame.mouse.get_pos()
         self._btn_back.update(dt, mouse_pos=mouse_pos)
-        for btn, key in self._song_buttons:
-            btn.update(dt, mouse_pos=mouse_pos)
+        self._btn_reset.update(dt, mouse_pos=mouse_pos)
+        for tab in self._tabs: tab.update(dt, mouse_pos=mouse_pos)
+        for item in self._items: item.update(dt, mouse_pos=mouse_pos)
 
     def draw(self, surface):
-        draw_text(surface, "Select Song", self._game.FONT_MEDIUM, WIDTH // 2, 100, color=theme_mgr.get("text_color"))
+        txt_col = theme_mgr.get("text_color")
+        draw_text(surface, f"Shop - {self._current_tab}", self._game.FONT_MEDIUM, WIDTH // 2, 30, color=txt_col)
+        draw_text(surface, f"Currency: {self._game.get_currency()}", self._game.FONT_SMALL, WIDTH - 100, 30, GOLD)
+        
         self._btn_back.draw(surface)
-        for btn, key in self._song_buttons:
-            btn.draw(surface)
+        self._btn_reset.draw(surface)
+        for tab in self._tabs: tab.draw(surface)
+        for item in self._items: item.draw(surface)
 
+class ShopItemButton(UIElement):
+    def __init__(self, x, y, w, h, name, price, category, game, val=None):
+        super().__init__(x, y, w, h)
+        self._name = name
+        self._price = price
+        self._category = category
+        self._game = game
+        self._val = val if val is not None else name
+        self._is_hovered = False
+        
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self._is_hovered:
+            if self._game.has_item(self._category, self._val):
+                self._game.equip_item(self._category, self._val)
+            else:
+                self._game.buy_item(self._category, self._val, self._price)
+
+    def update(self, dt, **kwargs):
+        mouse_pos = kwargs.get("mouse_pos")
+        if mouse_pos:
+            self._is_hovered = self._rect.collidepoint(mouse_pos)
+        else:
+            self._is_hovered = False
+
+    def draw(self, surface):
+        color = (50, 50, 80)
+        if self._is_hovered: color = (70, 70, 100)
+        pygame.draw.rect(surface, color, self._rect, border_radius=10)
+        
+        owned = self._game.has_item(self._category, self._val)
+        equipped = self._game.is_equipped(self._category, self._val)
+        
+        status_text = f"{self._price}"
+        status_color = WHITE
+        
+        if equipped:
+            status_text = "EQUIPPED"
+            status_color = GREEN_BUY
+        elif owned:
+            status_text = "OWNED"
+            status_color = (150, 255, 150)
+        elif self._game.get_currency() < self._price:
+            status_color = RED_ERROR
+            
+        draw_text(surface, self._name, self._game.FONT_SMALL, self._rect.centerx, self._rect.top + 20, WHITE)
+        draw_text(surface, status_text, self._game.FONT_TINY, self._rect.centerx, self._rect.bottom - 30, status_color)
+
+class RhythmSelectionState(GameState):
+    def __init__(self, game):
+        super().__init__(game)
+        self._buttons = []
+        start_y = 250
+        for i, song in enumerate(SONG_LIST):
+            btn = Button(WIDTH//2 - 150, start_y + i * 80, 300, 60, song["name"], "normal", game.FONT_SMALL)
+            self._buttons.append(btn)
+        self._btn_back = Button(WIDTH//2 - 100, 650, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
+        self._buttons.append(self._btn_back)
+
+    def handle_event(self, event):
+        if self._btn_back.check_click(event):
+            self._game.change_state(MenuState(self._game))
+        for i, btn in enumerate(self._buttons[:-1]):
+            if btn.check_click(event):
+                selected_song = SONG_LIST[i]
+                self._game.change_state(RhythmGameState(self._game, selected_song))
+
+    def update(self, dt):
+        mouse_pos = pygame.mouse.get_pos()
+        for btn in self._buttons: btn.update(dt, mouse_pos=mouse_pos)
+
+    def draw(self, surface):
+        txt_col = theme_mgr.get("text_color")
+        draw_text(surface, "Select Song", self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
+        for btn in self._buttons: btn.draw(surface)
 
 class SettingsState(GameState):
     def __init__(self, game):
         super().__init__(game)
         self._current_view = "main"
         self._btn_to_audio = Button(WIDTH//2 - 100, 300, 200, 50, "AUDIO", "normal", game.FONT_MEDIUM)
-        self._btn_to_appear = Button(WIDTH//2 - 100, 370, 200, 50, "THEME", "normal", game.FONT_MEDIUM)
-        self._btn_to_diff = Button(WIDTH//2 - 100, 440, 200, 50, "DIFFICULTY", "normal", game.FONT_MEDIUM)
+        self._btn_to_diff = Button(WIDTH//2 - 100, 370, 200, 50, "DIFFICULTY", "normal", game.FONT_MEDIUM)
         self._btn_back_main = Button(WIDTH//2 - 100, 600, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
         
         self._slider_music = Slider(100, 300, 300, 20, 0.0, 1.0, pygame.mixer.music.get_volume(), game.FONT_TINY)
         self._slider_sfx = Slider(100, 400, 300, 20, 0.0, 1.0, game.sfx_volume, game.FONT_TINY)
         self._btn_back_sub = Button(WIDTH//2 - 100, 600, 200, 50, "BACK", "normal", game.FONT_MEDIUM)
         
-        self._btn_theme = Button(WIDTH//2 - 100, 350, 200, 50, "", "normal", game.FONT_SMALL)
         self._btn_easy = Button(WIDTH//2 - 100, 300, 200, 50, "Easy", "normal", game.FONT_SMALL)
         self._btn_medium = Button(WIDTH//2 - 100, 370, 200, 50, "Normal", "normal", game.FONT_SMALL)
         self._btn_hard = Button(WIDTH//2 - 100, 440, 200, 50, "Hard", "normal", game.FONT_SMALL)
@@ -635,13 +839,11 @@ class SettingsState(GameState):
         self._btn_easy.set_type("active" if settings["star_rate_name"] == "Easy" else "normal")
         self._btn_medium.set_type("active" if settings["star_rate_name"] == "Normal" else "normal")
         self._btn_hard.set_type("active" if settings["star_rate_name"] == "Hard" else "normal")
-        self._btn_theme.set_text(f"Theme: {theme_mgr.current_theme.capitalize()}")
 
     def handle_event(self, event):
         self._update_button_states()
         if self._current_view == "main":
             if self._btn_to_audio.check_click(event): self._current_view = "audio"
-            elif self._btn_to_appear.check_click(event): self._current_view = "appearance"
             elif self._btn_to_diff.check_click(event): self._current_view = "difficulty"
             elif self._btn_back_main.check_click(event): self._game.change_state(MenuState(self._game))
         elif self._current_view == "audio":
@@ -650,9 +852,6 @@ class SettingsState(GameState):
             pygame.mixer.music.set_volume(self._slider_music.get_value())
             self._game.sfx_volume = self._slider_sfx.get_value()
             if self._btn_back_sub.check_click(event): self._current_view = "main"
-        elif self._current_view == "appearance":
-            if self._btn_theme.check_click(event): theme_mgr.start_transition()
-            elif self._btn_back_sub.check_click(event): self._current_view = "main"
         elif self._current_view == "difficulty":
             settings = self._game.get_settings()
             if self._btn_easy.check_click(event): settings["star_rate"] = 130; settings["star_rate_name"] = "Easy"
@@ -663,9 +862,8 @@ class SettingsState(GameState):
     def update(self, dt):
         mouse_pos = pygame.mouse.get_pos()
         if self._current_view == "main":
-            for btn in [self._btn_to_audio, self._btn_to_appear, self._btn_to_diff, self._btn_back_main]: btn.update(dt, mouse_pos=mouse_pos)
+            for btn in [self._btn_to_audio, self._btn_to_diff, self._btn_back_main]: btn.update(dt, mouse_pos=mouse_pos)
         elif self._current_view == "audio": self._btn_back_sub.update(dt, mouse_pos=mouse_pos)
-        elif self._current_view == "appearance": self._btn_theme.update(dt, mouse_pos=mouse_pos); self._btn_back_sub.update(dt, mouse_pos=mouse_pos)
         elif self._current_view == "difficulty":
             for btn in [self._btn_easy, self._btn_medium, self._btn_hard, self._btn_back_sub]: btn.update(dt, mouse_pos=mouse_pos)
 
@@ -673,7 +871,7 @@ class SettingsState(GameState):
         txt_col = theme_mgr.get("text_color")
         if self._current_view == "main":
             draw_text(surface, "Settings", self._game.FONT_BIG, WIDTH // 2, 150, color=txt_col)
-            self._btn_to_audio.draw(surface); self._btn_to_appear.draw(surface); self._btn_to_diff.draw(surface); self._btn_back_main.draw(surface)
+            self._btn_to_audio.draw(surface); self._btn_to_diff.draw(surface); self._btn_back_main.draw(surface)
         elif self._current_view == "audio":
             draw_text(surface, "Audio Settings", self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
             draw_text(surface, "Music Volume:", self._game.FONT_SMALL, WIDTH // 2, 270, color=txt_col)
@@ -681,36 +879,21 @@ class SettingsState(GameState):
             draw_text(surface, "SFX Volume:", self._game.FONT_SMALL, WIDTH // 2, 370, color=txt_col)
             self._slider_sfx.draw(surface)
             self._btn_back_sub.draw(surface)
-        elif self._current_view == "appearance":
-            draw_text(surface, "Theme Settings", self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
-            self._btn_theme.draw(surface); self._btn_back_sub.draw(surface)
         elif self._current_view == "difficulty":
             draw_text(surface, "Difficulty", self._game.FONT_MEDIUM, WIDTH // 2, 150, color=txt_col)
             self._btn_easy.draw(surface); self._btn_medium.draw(surface); self._btn_hard.draw(surface); self._btn_back_sub.draw(surface)
 
 class GameOverState(GameState):
-    def __init__(self, game, score, show_highscore=True, is_win=False):
+    def __init__(self, game, score):
         super().__init__(game)
         self._score = score
-        self._show_highscore = show_highscore
-        self._is_win = is_win
-        
-        if show_highscore:
-            self._game.save_high_score(score)
-            self._high_score = self._game.get_high_score()
-        else:
-            self._high_score = 0
-
+        self._game.save_high_score(score)
+        self._high_score = self._game.get_high_score()
         self._btn_retry = Button(WIDTH//2 - 100, 400, 200, 50, "RETRY", "normal", game.FONT_MEDIUM)
         self._btn_menu = Button(WIDTH//2 - 100, 470, 200, 50, "MENU", "normal", game.FONT_MEDIUM)
 
     def handle_event(self, event):
-        if self._btn_retry.check_click(event):
-            # Restart logic based on mode
-            if not self._show_highscore:
-                 self._game.change_state(SongSelectState(self._game))
-            else:
-                 self._game.change_state(PlayingState(self._game))
+        if self._btn_retry.check_click(event): self._game.change_state(PlayingState(self._game))
         elif self._btn_menu.check_click(event): self._game.change_state(MenuState(self._game))
 
     def update(self, dt):
@@ -722,35 +905,17 @@ class GameOverState(GameState):
         overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 200))
         surface.blit(overlay, (0, 0))
-        
-        # Логіка кольору і тексту
-        if self._is_win:
-            title_text = "SONG COMPLETE!"
-            title_color = GOLD_WIN
-        else:
-            title_text = "GAME OVER"
-            # Колір залежить від теми (світлий в темній, темний в світлій)
-            title_color = theme_mgr.get("text_color")
-        
-        draw_text(surface, title_text, self._game.FONT_BIG, WIDTH // 2, 150, title_color)
-        
-        if self._show_highscore:
-            # Класичний режим - показуємо очки
-            draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
-            draw_text(surface, f"High Score: {self._high_score}", self._game.FONT_SMALL, WIDTH // 2, 300, (255, 215, 0))
-        else:
-            # Ритм режим
-            if not self._is_win:
-                draw_text(surface, "Nice try!", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
-            
+        draw_text(surface, "GAME OVER", self._game.FONT_BIG, WIDTH // 2, 150, RED_ERROR)
+        draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, WIDTH // 2, 250, WHITE)
+        draw_text(surface, f"High Score: {self._high_score}", self._game.FONT_SMALL, WIDTH // 2, 300, (255, 215, 0))
         self._btn_retry.draw(surface)
         self._btn_menu.draw(surface)
 
 class PlayingState(GameState):
     def __init__(self, game):
         super().__init__(game)
-        self._basket = Basket()
-        self._star_manager = ObjectManager[Star]()
+        self._basket = Basket(game)
+        self._star_manager = ObjectManager[GameObject]()
         self._particle_manager = ObjectManager[Particle]()
         self.reset_game()
 
@@ -772,36 +937,45 @@ class PlayingState(GameState):
         self._star_add_counter += 1
         if self._star_add_counter >= self._current_add_rate:
             self._star_add_counter = 0
-            num_to_spawn = 1
-            if self._speed_multiplier > 3.5: num_to_spawn = 3
-            elif self._speed_multiplier > 2.0: num_to_spawn = 2
-            for _ in range(num_to_spawn):
-                self._star_manager.add(Star(self._speed_multiplier))
+            if random.random() < 0.05: 
+                self._star_manager.add(Currency(self._speed_multiplier))
+            else:
+                num_to_spawn = 1
+                if self._speed_multiplier > 3.5: num_to_spawn = 3
+                elif self._speed_multiplier > 2.0: num_to_spawn = 2
+                for _ in range(num_to_spawn):
+                    self._star_manager.add(Star(self._speed_multiplier, self._game))
 
     def _handle_collisions(self):
         missed_star = False
         basket_rect = self._basket.get_rect()
-        for star in self._star_manager.get_list()[:]:
-            if star.get_y() > HEIGHT:
-                self._star_manager.remove(star)
-                missed_star = True
-                self._missed_stars += 1
-                self._score = max(0, self._score - 5)
-                if self._missed_stars >= MAX_MISSED_STARS:
-                    self._game.change_state(GameOverState(self._game, self._score, show_highscore=True, is_win=False))
-                    return
-            elif star.get_rect().colliderect(basket_rect):
-                self._game.play_catch_sound()
-                self._score += star.get_points() + self._combo
-                self._combo += 1
-                if self._speed_multiplier < 5.0:
-                    self._speed_multiplier = min(self._speed_multiplier + 0.03, 5.0)
-                num_particles = random.randint(8, 12)
-                star_pos = star.get_pos()
-                star_color = star.get_color()
-                for _ in range(num_particles):
-                    self._particle_manager.add(Particle(star_pos[0], star_pos[1], star_color))
-                self._star_manager.remove(star)
+        for obj in self._star_manager.get_list()[:]:
+            if obj.get_y() > HEIGHT:
+                self._star_manager.remove(obj)
+                if isinstance(obj, Star):
+                    missed_star = True
+                    self._missed_stars += 1
+                    self._score = max(0, self._score - 5)
+                    if self._missed_stars >= MAX_MISSED_STARS:
+                        self._game.update_high_score(self._score)
+                        self._game.change_state(GameOverState(self._game, self._score))
+                        return
+            elif obj.get_rect().colliderect(basket_rect):
+                if isinstance(obj, Currency):
+                    self._game.add_currency(1)
+                    self._game.play_catch_sound() 
+                elif isinstance(obj, Star):
+                    self._game.play_catch_sound()
+                    self._score += obj.get_points() + self._combo
+                    self._combo += 1
+                    if self._speed_multiplier < 5.0:
+                        self._speed_multiplier = min(self._speed_multiplier + 0.03, 5.0)
+                    num_particles = random.randint(8, 12)
+                    star_pos = obj.get_pos()
+                    star_color = obj.get_color()
+                    for _ in range(num_particles):
+                        self._particle_manager.add(Particle(star_pos[0], star_pos[1], star_color))
+                self._star_manager.remove(obj)
         if missed_star: self._combo = 0
 
     def update(self, dt):
@@ -826,175 +1000,96 @@ class PlayingState(GameState):
         draw_text(surface, f"Speed: {self._speed_multiplier:.2f}x", self._game.FONT_TINY, WIDTH - 80, 20, color=txt_col, align="topright")
         draw_text(surface, f"Platform: {self._basket.get_vel():.1f}", self._game.FONT_TINY, WIDTH - 80, 50, color=txt_col, align="topright")
 
-# --- RHYTHM GAME STATE ---
-
 class RhythmGameState(GameState):
-    def __init__(self, game, song_id=None):
+    def __init__(self, game, song_data):
         super().__init__(game)
-        self._basket = Basket()
+        self._basket = Basket(game)
         self._star_manager = ObjectManager[Star]()
         self._particle_manager = ObjectManager[Particle]()
-        
-        # --- НАЛАШТУВАННЯ ---
+        self._song_data = song_data
+        self._bpm = song_data["bpm"]
+        self._beat_interval = 60.0 / self._bpm
+        self._next_beat_time = song_data["offset"]
+        self._timer = 0.0
+        self._speed = 5.0
         self._score = 0
         self._is_playing = True
-        self._speed = 7.0 
-        
-        self._spawned_count = 0 
-        self._notes_list = []
-        self._total_notes = 0
-        self._sound_cache = {} 
-        self._song_name_display = "Unknown Song"
-        
-        self._note_mapping = {
-            "df": "d-5" 
-        }
-        
-        # Завантаження списку нот
-        try:
-            with open(NOTES_FILE, 'r') as file:
-                notes_dict = json.load(file)
-                if song_id and song_id in notes_dict:
-                    self._notes_list = notes_dict[song_id]
-                    self._song_name_display = SONG_NAMES_MAP.get(song_id, f"Song {song_id}")
-                    print(f"Selected song: {song_id}")
-                else:
-                    available_songs = list(notes_dict.keys())
-                    if available_songs:
-                        selected_song_key = random.choice(available_songs)
-                        self._notes_list = notes_dict[selected_song_key]
-                        self._song_name_display = SONG_NAMES_MAP.get(selected_song_key, "Random Song")
-                
-                self._total_notes = len(self._notes_list)
-        except Exception as e:
-            print(f"Error loading notes.json: {e}")
-            self._notes_list = []
-
-        # Завантаження звуків
-        print("Loading sounds...")
-        unique_notes = set(self._notes_list)
-        for note_name in unique_notes:
-            clean_name = note_name.strip()
-            
-            if clean_name in self._note_mapping:
-                clean_name = self._note_mapping[clean_name]
-
-            possible_names = [
-                clean_name,
-                clean_name.lower(),
-                clean_name.upper(),
-                clean_name.replace("-", "#")
-            ]
-            
-            sound_loaded = False
-            for try_name in possible_names:
-                for ext in [".ogg", ".mp3", ".wav"]:
-                    path = os.path.join(SOUND_FOLDER, f"{try_name}{ext}")
-                    if os.path.exists(path):
-                        try:
-                            snd = pygame.mixer.Sound(path)
-                            snd.set_volume(1.0)
-                            self._sound_cache[note_name.strip()] = snd 
-                            sound_loaded = True
-                            break
-                        except: pass
-                if sound_loaded: break
-            
-            if not sound_loaded:
-                print(f"WARNING: File not found for note: '{clean_name}'")
+        self._audio_gate_timer = 0.0
+        self._audio_gated = False
         
         pygame.mixer.music.stop()
+        try:
+            path = os.path.join(SOUND_FOLDER, song_data["file"])
+            pygame.mixer.music.load(path)
+            pygame.mixer.music.set_volume(0) 
+            pygame.mixer.music.play()
+        except Exception as e:
+            print(f"Error loading rhythm song: {e}")
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                self._game.change_state(MenuState(self._game))
-            elif event.key == pygame.K_SPACE:
-                self._game.change_state(PausedState(self._game, self))
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            pygame.mixer.music.set_volume(0.5) 
+            self._game.change_state(MenuState(self._game))
 
-    def _spawn_star(self):
-        if self._spawned_count < self._total_notes:
-            lane_x = random.choice(LANE_CENTERS)
-            note_name = self._notes_list[self._spawned_count].strip()
-            
-            star = Star(1.0, fixed_x=int(lane_x), note_name=note_name) 
-            star.set_y(-50)
-            self._star_manager.add(star)
-            self._spawned_count += 1
-    
     def update(self, dt):
         if not self._is_playing: return
+        if not pygame.mixer.music.get_busy():
+             self._game.update_high_score(self._score)
+             self._game.change_state(GameOverState(self._game, self._score))
 
-        keys = pygame.key.get_pressed()
-        self._basket.update(dt, keys=keys, speed_multiplier=1.3)
-
-        # --- ЛОГІКА СПАВНУ ---
-        stars = self._star_manager.get_list()
-        should_spawn = False
-        
-        if len(stars) == 0:
-            should_spawn = True
+        if self._audio_gate_timer > 0:
+            self._audio_gate_timer -= dt
         else:
-            last_star = stars[-1]
-            min_distance = 300 + (self._speed * 10) 
-            if last_star.get_y() > min_distance:
-                should_spawn = True
+            if not self._audio_gated:
+                pygame.mixer.music.set_volume(0)
+                self._audio_gated = True
         
-        if should_spawn and self._spawned_count < self._total_notes:
-            self._spawn_star()
+        keys = pygame.key.get_pressed()
+        self._basket.update(dt, keys=keys, speed_multiplier=1.2)
+        self._timer += dt
         
-        # WIN CONDITION
-        if self._spawned_count >= self._total_notes and len(stars) == 0:
-             self._game.change_state(GameOverState(self._game, self._score, show_highscore=False, is_win=True))
-             return
-
-        self._star_manager.update_all(dt, speed=self._speed, speed_multiplier=1.0)
+        if self._timer >= self._next_beat_time:
+            self._spawn_rhythm_note()
+            self._next_beat_time += self._beat_interval * 2
+            
+        self._star_manager.update_all(dt, speed_multiplier=1.0)
         
-        # --- КОЛІЗІЇ ---
         basket_rect = self._basket.get_rect()
         for star in self._star_manager.get_list()[:]:
-            
             if star.get_y() > HEIGHT:
-                # LOSS CONDITION IN RHYTHM MODE
-                self._game.change_state(GameOverState(self._game, self._score, show_highscore=False, is_win=False))
+                pygame.mixer.music.set_volume(0.5)
+                self._game.update_high_score(self._score)
+                self._game.change_state(GameOverState(self._game, self._score))
                 return
-                
             elif star.get_rect().colliderect(basket_rect):
-                if star.note_name and star.note_name in self._sound_cache:
-                    self._sound_cache[star.note_name].play()
-                else:
-                    print(f"MISSING SOUND FILE: {star.note_name}")
-                    self._game.play_catch_sound()
-                
-                self._score += 1
-                self._speed += 0.02 
-                if self._speed > 18: self._speed = 18
-                
+                pygame.mixer.music.set_volume(1.0)
+                self._audio_gate_timer = 0.5 
+                self._audio_gated = False
+                self._score += 10
                 star_pos = star.get_pos()
                 star_color = star.get_color()
                 for _ in range(10):
                     self._particle_manager.add(Particle(star_pos[0], star_pos[1], star_color))
-                
                 self._star_manager.remove(star)
-
         for particle in self._particle_manager.get_list()[:]:
             if not particle.update(dt):
                 self._particle_manager.remove(particle)
+
+    def _spawn_rhythm_note(self):
+        lane_x = random.choice(LANE_CENTERS)
+        star = Star(self._speed, self._game, fixed_x=int(lane_x))
+        star.set_y(-50)
+        self._star_manager.add(star)
 
     def draw(self, surface):
         self._basket.draw(surface)
         self._star_manager.draw_all(surface)
         self._particle_manager.draw_all(surface)
-        
         txt_col = theme_mgr.get("text_color")
-        # ТІЛЬКИ НАЗВА ПІСНІ ЗВЕРХУ
-        draw_text(surface, self._song_name_display, self._game.FONT_MEDIUM, WIDTH//2, 50, color=txt_col)
-        
-        # Прогрес
-        draw_text(surface, f"{self._spawned_count}/{self._total_notes}", self._game.FONT_SMALL, WIDTH - 60, 50, color=txt_col)
+        draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, 60, 20, color=txt_col, align="topleft")
 
 class PausedState(GameState):
-    def __init__(self, game, playing_state: GameState):
+    def __init__(self, game, playing_state: PlayingState):
         super().__init__(game)
         self._playing_state = playing_state
         self._overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -1017,27 +1112,30 @@ class PausedState(GameState):
         draw_text(surface, "Press SPACE to resume", self._game.FONT_SMALL, WIDTH // 2, 400, color=WHITE)
         draw_text(surface, "Press ESC for menu", self._game.FONT_TINY, WIDTH // 2, 450, color=WHITE)
 
-# --- MAIN GAME CLASS ---
-
 class Game:
     def __init__(self):
         pygame.mixer.pre_init(44100, -16, 2, 512)
         pygame.init()
-        pygame.mixer.set_num_channels(64) 
-        
         self._window = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Retinal")
         self._clock = pygame.time.Clock()
         self._running = True
         self._settings = {"star_rate": 100, "star_rate_name": "Normal"}
-        
         self.sfx_volume = 0.5
-        self._high_score = 0
-        self._load_high_score()
+        self.data = {
+            "high_score": 0,
+            "currency": 0, 
+            "inventory": ["Default", "Star", "Default_Size"],
+            "equipped": {"color": "Default", "shape": "Star", "size": 0}
+        }
+        self._load_data()
+        
+        if self.data["currency"] < 10000:
+             self.data["currency"] = 1000000
+             self._save_data()
 
         self._load_fonts()
         self._create_background()
-        
         self._menu_music_path = os.path.join(SOUND_FOLDER, "menu_sound.mp3")
         self._game_music_path = os.path.join(SOUND_FOLDER, "game_sound.mp3")
         self._sound_effect_paths = {"hight": os.path.join(SOUND_FOLDER, "hight.mp3")}
@@ -1045,32 +1143,65 @@ class Game:
         self._catch_sound: Optional[pygame.mixer.Sound] = None
         self._sound_channel_star: Optional[pygame.mixer.Channel] = None
         self._load_audio()
-        
         self._current_state: GameState = MenuState(self)
         self.play_music(self._menu_music_path, volume=0.5)
 
-    def _load_high_score(self):
-        if os.path.exists(HIGHSCORE_FILE):
+    def _load_data(self):
+        if os.path.exists(SAVE_FILE):
             try:
-                with open(HIGHSCORE_FILE, 'r') as f:
-                    self._high_score = int(f.read())
+                with open(SAVE_FILE, 'r') as f:
+                    loaded_data = json.load(f)
+                    for key in self.data:
+                        if key in loaded_data:
+                            self.data[key] = loaded_data[key]
             except:
-                self._high_score = 0
+                print("Error loading save file.")
 
-    def save_high_score(self, score):
-        if score > self._high_score:
-            self._high_score = score
-            try:
-                with open(HIGHSCORE_FILE, 'w') as f:
-                    f.write(str(self._high_score))
-            except:
-                pass
+    def _save_data(self):
+        try:
+            with open(SAVE_FILE, 'w') as f:
+                json.dump(self.data, f)
+        except:
+            print("Error saving data.")
+
+    def update_high_score(self, score):
+        if score > self.data["high_score"]:
+            self.data["high_score"] = score
+            self._save_data()
 
     def get_high_score(self):
-        return self._high_score
+        return self.data["high_score"]
+
+    def get_currency(self):
+        return self.data["currency"]
+
+    def add_currency(self, amount):
+        self.data["currency"] += amount
+        self._save_data()
+        
+    def has_item(self, category, item_id):
+        if item_id == "Default" or item_id == "Star" or item_id == 0: return True
+        return item_id in self.data["inventory"]
+        
+    def buy_item(self, category, item_id, price):
+        if self.data["currency"] >= price:
+            self.data["currency"] -= price
+            self.data["inventory"].append(item_id)
+            self._save_data()
+            return True
+        return False
+        
+    def equip_item(self, category, item_id):
+        self.data["equipped"][category] = item_id
+        self._save_data()
+
+    def is_equipped(self, category, item_id):
+        return self.data["equipped"].get(category) == item_id
+
+    def get_equipped(self, category):
+        return self.data["equipped"].get(category)
 
     def _load_fonts(self):
-        FONT_FILE = "font.otf"
         try:
             self.FONT_BIG = pygame.font.Font(FONT_FILE, 70)
             self.FONT_MEDIUM = pygame.font.Font(FONT_FILE, 40)
@@ -1085,23 +1216,18 @@ class Game:
     def _create_background(self):
         self._bg_stars = []
         for _ in range(NUM_BG_STARS):
-            self._bg_stars.append({'pos': (random.randint(0, WIDTH), random.randint(0, HEIGHT)), 'radius': random.randint(2, 4)})
-        
+            self._bg_stars.append({'pos': (random.randint(0, WIDTH), random.randint(0, HEIGHT)), 'radius': random.randint(1, 2)})
         self._waves_manager = ObjectManager[ProceduralWave]()
         self._waves_manager.add(ProceduralWave(0)) 
         self._waves_manager.add(ProceduralWave(1)) 
-        self._waves_manager.add(ProceduralWave(2))
-        
-        self._bokeh_manager = ObjectManager[BackgroundBokeh]()
-        for _ in range(20):
-             self._bokeh_manager.add(BackgroundBokeh())
+        self._waves_manager.add(ProceduralWave(2)) 
 
     def _load_audio(self):
         try:
             hight_path = self._sound_effect_paths.get("hight")
             if hight_path and os.path.exists(hight_path):
                  self._catch_sound = pygame.mixer.Sound(hight_path)
-                 self._sound_channel_star = pygame.mixer.Channel(63) 
+                 self._sound_channel_star = pygame.mixer.Channel(0)
             else:
                  self._catch_sound = None
                  self._sound_channel_star = None
@@ -1134,9 +1260,7 @@ class Game:
     def run(self):
         while self._running:
             dt = self._clock.tick(FPS) / 1000.0
-            
             switched = theme_mgr.update()
-            
             self._handle_events()
             self._update(dt, theme_switched=switched)
             self._draw()
@@ -1150,32 +1274,21 @@ class Game:
 
     def _update(self, dt, theme_switched=False):
         self._waves_manager.update_all(dt, theme_switched=theme_switched)
-        if theme_mgr.get("has_bg_bokeh"):
-             self._bokeh_manager.update_all(dt)
         self._current_state.update(dt)
 
     def _draw(self):
         self._window.fill(theme_mgr.get("bg_color"))
-        
         if theme_mgr.get("has_bg_stars"):
             for star in self._bg_stars:
                 pygame.draw.circle(self._window, WHITE, star['pos'], star['radius'])
-        
-        if theme_mgr.get("has_bg_bokeh"):
-             self._bokeh_manager.draw_all(self._window)
-        
-        if theme_mgr.get("show_waves"):
-            self._waves_manager.draw_all(self._window)
-            
+        self._waves_manager.draw_all(self._window)
         self._current_state.draw(self._window)
         theme_mgr.draw_transition(self._window)
-
         pygame.display.flip()
 
     def change_state(self, new_state: GameState):
         self._current_state = new_state
-        
-        if isinstance(new_state, (MenuState, SettingsState, GameOverState, SongSelectState)):
+        if isinstance(new_state, (MenuState, SettingsState, GameOverState, RhythmSelectionState, ShopState)):
              self.play_music(self._menu_music_path, volume=pygame.mixer.music.get_volume())
         elif isinstance(new_state, PlayingState):
             self.play_music(self._game_music_path, volume=0.3)
@@ -1186,7 +1299,6 @@ class Game:
     def get_settings(self) -> dict:
         return self._settings
 
-# --- ЗАПУСК ГРИ ---
 if __name__ == "__main__":
     game = Game()
     game.run()
