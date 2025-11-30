@@ -1,7 +1,10 @@
 # RETINAL’ — Rhythm & Arcade Catcher
 
-**RETINAL’** is a 2D arcade game that blends fast-paced object-catching mechanics with musical rhythm elements. Developed as a capstone project for the **Object-Oriented Programming (2025-2026)** course, it demonstrates advanced software engineering practices including design patterns, unit testing, and localization.
+**RETINAL’** is a 2D arcade game that blends fast-paced object-catching mechanics with musical rhythm elements. Developed as a capstone project for the **Object-Oriented Programming (2025-2026)** course, it demonstrates advanced software engineering practices including design patterns, unit testing, and localization.---
 
+## Live documentation 
+
+[Here](https://rina4203.github.io/Retinal-game/html/index.html)
 ---
 
 ## 📖 About the Game
