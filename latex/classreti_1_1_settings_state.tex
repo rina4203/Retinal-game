@@ -1,0 +1,120 @@
+\doxysection{reti.\+Settings\+State Class Reference}
+\hypertarget{classreti_1_1_settings_state}{}\label{classreti_1_1_settings_state}\index{reti.SettingsState@{reti.SettingsState}}
+Inheritance diagram for reti.\+Settings\+State\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classreti_1_1_settings_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_settings_state_aca6e28358f6507cc6841e7661a38b52f}\label{classreti_1_1_settings_state_aca6e28358f6507cc6841e7661a38b52f} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\item 
+\mbox{\hyperlink{classreti_1_1_settings_state_a44f19f706d44bc84a8e01762438d970e}{handle\+\_\+event}} (self, event)
+\item 
+\mbox{\hyperlink{classreti_1_1_settings_state_a3b2c9dfba2c339d6ffd1f495d873f672}{update}} (self, dt)
+\item 
+\mbox{\hyperlink{classreti_1_1_settings_state_aba420004c3b75d0140c68fd614d176ca}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_settings_state_aeb188c717aa682096d32a9d642f5dc33}\label{classreti_1_1_settings_state_aeb188c717aa682096d32a9d642f5dc33} 
+{\bfseries \+\_\+update\+\_\+button\+\_\+states} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_settings_state_ad790aa44beeb5f192699297bebf00fa9}\label{classreti_1_1_settings_state_ad790aa44beeb5f192699297bebf00fa9} 
+str {\bfseries \+\_\+current\+\_\+view} = "{}main"{}
+\item 
+\Hypertarget{classreti_1_1_settings_state_a86b4f480294dd7e59111fadbae7a0b32}\label{classreti_1_1_settings_state_a86b4f480294dd7e59111fadbae7a0b32} 
+{\bfseries \+\_\+btn\+\_\+to\+\_\+audio} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 300, 200, 50, "{}AUDIO"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_settings_state_abac7a9f07245f3f5a5f222da62c564f1}\label{classreti_1_1_settings_state_abac7a9f07245f3f5a5f222da62c564f1} 
+{\bfseries \+\_\+btn\+\_\+to\+\_\+diff} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 370, 200, 50, "{}DIFFICULTY"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_settings_state_ab2d1998b7e3f67c12e66610f6e027058}\label{classreti_1_1_settings_state_ab2d1998b7e3f67c12e66610f6e027058} 
+{\bfseries \+\_\+btn\+\_\+lang} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 440, 200, 50, "{}LANG"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_settings_state_ac7cc158d8bc42a60730b17aa6cd4aa22}\label{classreti_1_1_settings_state_ac7cc158d8bc42a60730b17aa6cd4aa22} 
+{\bfseries \+\_\+btn\+\_\+back\+\_\+main} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 600, 200, 50, "{}BACK"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_settings_state_a6be33a31d367afcfddbac45518cd5eda}\label{classreti_1_1_settings_state_a6be33a31d367afcfddbac45518cd5eda} 
+{\bfseries \+\_\+slider\+\_\+music} = \mbox{\hyperlink{classreti_1_1_slider}{Slider}}(100, 300, 300, 20, 0.\+0, 1.\+0, pygame.\+mixer.\+music.\+get\+\_\+volume(), game.\+FONT\+\_\+\+TINY)
+\item 
+\Hypertarget{classreti_1_1_settings_state_af0667b279c279590e72ad43c50500703}\label{classreti_1_1_settings_state_af0667b279c279590e72ad43c50500703} 
+{\bfseries \+\_\+slider\+\_\+sfx} = \mbox{\hyperlink{classreti_1_1_slider}{Slider}}(100, 400, 300, 20, 0.\+0, 1.\+0, game.\+sfx\+\_\+volume, game.\+FONT\+\_\+\+TINY)
+\item 
+\Hypertarget{classreti_1_1_settings_state_a512176b0285cf878084fad70c8bfdfa4}\label{classreti_1_1_settings_state_a512176b0285cf878084fad70c8bfdfa4} 
+{\bfseries \+\_\+btn\+\_\+back\+\_\+sub} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 600, 200, 50, "{}BACK"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_settings_state_aed734fd86080902884632a9635ec43e9}\label{classreti_1_1_settings_state_aed734fd86080902884632a9635ec43e9} 
+{\bfseries \+\_\+btn\+\_\+easy} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 300, 200, 50, "{}EASY"{}, "{}normal"{}, game.\+FONT\+\_\+\+SMALL)
+\item 
+\Hypertarget{classreti_1_1_settings_state_a22653e0168f669ffcceb0ecc301088c3}\label{classreti_1_1_settings_state_a22653e0168f669ffcceb0ecc301088c3} 
+{\bfseries \+\_\+btn\+\_\+medium} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 370, 200, 50, "{}NORMAL"{}, "{}normal"{}, game.\+FONT\+\_\+\+SMALL)
+\item 
+\Hypertarget{classreti_1_1_settings_state_a49d2d09b7db4daf1e8c71d9346d2c88b}\label{classreti_1_1_settings_state_a49d2d09b7db4daf1e8c71d9346d2c88b} 
+{\bfseries \+\_\+btn\+\_\+hard} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 440, 200, 50, "{}HARD"{}, "{}normal"{}, game.\+FONT\+\_\+\+SMALL)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+game} = game
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Settings screen (Audio, Difficulty, Language).
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_settings_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_settings_state_aba420004c3b75d0140c68fd614d176ca}\index{reti.SettingsState@{reti.SettingsState}!draw@{draw}}
+\index{draw@{draw}!reti.SettingsState@{reti.SettingsState}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_settings_state_aba420004c3b75d0140c68fd614d176ca} 
+reti.\+Settings\+State.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_settings_state_a44f19f706d44bc84a8e01762438d970e}\index{reti.SettingsState@{reti.SettingsState}!handle\_event@{handle\_event}}
+\index{handle\_event@{handle\_event}!reti.SettingsState@{reti.SettingsState}}
+\doxysubsubsection{\texorpdfstring{handle\_event()}{handle\_event()}}
+{\footnotesize\ttfamily \label{classreti_1_1_settings_state_a44f19f706d44bc84a8e01762438d970e} 
+reti.\+Settings\+State.\+handle\+\_\+event (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{event}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Handles Pygame events for this state.
+@param event The Pygame event object.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state_a0fe3e7fa1c372257b429dc900b2e3d6f}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_settings_state_a3b2c9dfba2c339d6ffd1f495d873f672}\index{reti.SettingsState@{reti.SettingsState}!update@{update}}
+\index{update@{update}!reti.SettingsState@{reti.SettingsState}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_settings_state_a3b2c9dfba2c339d6ffd1f495d873f672} 
+reti.\+Settings\+State.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

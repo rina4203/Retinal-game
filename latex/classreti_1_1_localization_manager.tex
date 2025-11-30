@@ -1,0 +1,68 @@
+\doxysection{reti.\+Localization\+Manager Class Reference}
+\hypertarget{classreti_1_1_localization_manager}{}\label{classreti_1_1_localization_manager}\index{reti.LocalizationManager@{reti.LocalizationManager}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classreti_1_1_localization_manager_a929b1d61256a2bd60fce0817caed6d82}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\item 
+str \mbox{\hyperlink{classreti_1_1_localization_manager_a0c00588ecc2cf5254a9bf9e2da7864a8}{get}} (self, str key)
+\item 
+\mbox{\hyperlink{classreti_1_1_localization_manager_a66b08969e191fc43f31c4c432c6b3421}{toggle\+\_\+lang}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_localization_manager_a4d36af827c72e7e4fa758ac447753d85}\label{classreti_1_1_localization_manager_a4d36af827c72e7e4fa758ac447753d85} 
+str {\bfseries current\+\_\+lang} = "{}EN"{}
+\item 
+\Hypertarget{classreti_1_1_localization_manager_afd4b16f623b0e00b36a4b9c4b1e31bf5}\label{classreti_1_1_localization_manager_afd4b16f623b0e00b36a4b9c4b1e31bf5} 
+dict {\bfseries translations}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Manages localization and string translation.
+@details Holds dictionaries for supported languages (EN, UA) and provides methods to retrieve localized strings.
+@class LocalizationManager
+\end{DoxyVerb}
+ 
+
+\label{doc-constructors}
+\Hypertarget{classreti_1_1_localization_manager_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classreti_1_1_localization_manager_a929b1d61256a2bd60fce0817caed6d82}\index{reti.LocalizationManager@{reti.LocalizationManager}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!reti.LocalizationManager@{reti.LocalizationManager}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classreti_1_1_localization_manager_a929b1d61256a2bd60fce0817caed6d82} 
+reti.\+Localization\+Manager.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Initializes the LocalizationManager with default language (EN).
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_localization_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_localization_manager_a0c00588ecc2cf5254a9bf9e2da7864a8}\index{reti.LocalizationManager@{reti.LocalizationManager}!get@{get}}
+\index{get@{get}!reti.LocalizationManager@{reti.LocalizationManager}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \label{classreti_1_1_localization_manager_a0c00588ecc2cf5254a9bf9e2da7864a8} 
+ str reti.\+Localization\+Manager.\+get (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{str}]{key}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Retrieves the localized string for a given key.
+@param key The key to look up (e.g., "START").
+@return The translated string, or the key itself if not found.
+\end{DoxyVerb}
+ \Hypertarget{classreti_1_1_localization_manager_a66b08969e191fc43f31c4c432c6b3421}\index{reti.LocalizationManager@{reti.LocalizationManager}!toggle\_lang@{toggle\_lang}}
+\index{toggle\_lang@{toggle\_lang}!reti.LocalizationManager@{reti.LocalizationManager}}
+\doxysubsubsection{\texorpdfstring{toggle\_lang()}{toggle\_lang()}}
+{\footnotesize\ttfamily \label{classreti_1_1_localization_manager_a66b08969e191fc43f31c4c432c6b3421} 
+reti.\+Localization\+Manager.\+toggle\+\_\+lang (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Toggles the language between English (EN) and Ukrainian (UA).
+\end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

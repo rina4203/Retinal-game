@@ -1,0 +1,138 @@
+\doxysection{reti.\+Theme\+Manager Class Reference}
+\hypertarget{classreti_1_1_theme_manager}{}\label{classreti_1_1_theme_manager}\index{reti.ThemeManager@{reti.ThemeManager}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classreti_1_1_theme_manager_af3683ccfab0bb6436769617560a3513f}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_theme_manager_a7231dd834c8669883c21c9d5a9ba0984}{get}} (self, key)
+\item 
+\mbox{\hyperlink{classreti_1_1_theme_manager_acefa7a0bace35a347759e661c6165ece}{start\+\_\+transition}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_theme_manager_afe718a8dda3c2b4dbb781af6c9ec792f}{update}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_theme_manager_a9f6b93249f89fc5a9d1e962ed8bc5ac0}{draw\+\_\+transition}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_theme_manager_a8c690f612806112ee9bf7893ededd47a}\label{classreti_1_1_theme_manager_a8c690f612806112ee9bf7893ededd47a} 
+str {\bfseries current\+\_\+theme} = "{}dark"{}
+\item 
+\Hypertarget{classreti_1_1_theme_manager_a2a7475bbfb407a246ed08818b28d75cc}\label{classreti_1_1_theme_manager_a2a7475bbfb407a246ed08818b28d75cc} 
+int {\bfseries transition\+\_\+alpha} = 0
+\item 
+\Hypertarget{classreti_1_1_theme_manager_a51ead2f73dae3bd69ac067f47e910b3c}\label{classreti_1_1_theme_manager_a51ead2f73dae3bd69ac067f47e910b3c} 
+bool {\bfseries is\+\_\+transitioning} = False
+\item 
+\Hypertarget{classreti_1_1_theme_manager_ad0560a1374346a1908fcd03f695cfd74}\label{classreti_1_1_theme_manager_ad0560a1374346a1908fcd03f695cfd74} 
+str {\bfseries target\+\_\+theme} = "{}"{}
+\item 
+\Hypertarget{classreti_1_1_theme_manager_a53826ac87138d3afd4fded960d3676ce}\label{classreti_1_1_theme_manager_a53826ac87138d3afd4fded960d3676ce} 
+int {\bfseries transition\+\_\+speed} = 15
+\item 
+\Hypertarget{classreti_1_1_theme_manager_a0ac92fe85a44f835dcf5299c733d49ed}\label{classreti_1_1_theme_manager_a0ac92fe85a44f835dcf5299c733d49ed} 
+list {\bfseries light\+\_\+clouds} = \mbox{[}$\,$\mbox{]}
+\item 
+dict \mbox{\hyperlink{classreti_1_1_theme_manager_a52b296e71a74dc13de55f7ba99589cb2}{themes}}
+\item 
+\Hypertarget{classreti_1_1_theme_manager_a42dfcd0703139b47efd4c8362ddb07de}\label{classreti_1_1_theme_manager_a42dfcd0703139b47efd4c8362ddb07de} 
+list {\bfseries light\+\_\+theme\+\_\+star\+\_\+colors} = \mbox{[} (255, 105, 180), (50, 205, 50), (255, 215, 0), (255, 69, 0) \mbox{]}
+\item 
+\Hypertarget{classreti_1_1_theme_manager_a7c2b78714e79474e10db5d20f3f07ad7}\label{classreti_1_1_theme_manager_a7c2b78714e79474e10db5d20f3f07ad7} 
+{\bfseries shop\+\_\+colors} = SHOP\+\_\+\+COLORS
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Manages visual themes and smooth transitions between them.
+@details Handles "dark" and "light" themes, defining colors, background elements, and particle effects.
+\end{DoxyVerb}
+ 
+
+\label{doc-constructors}
+\Hypertarget{classreti_1_1_theme_manager_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classreti_1_1_theme_manager_af3683ccfab0bb6436769617560a3513f}\index{reti.ThemeManager@{reti.ThemeManager}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!reti.ThemeManager@{reti.ThemeManager}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classreti_1_1_theme_manager_af3683ccfab0bb6436769617560a3513f} 
+reti.\+Theme\+Manager.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Initializes the theme manager with the default 'dark' theme.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_theme_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_theme_manager_a9f6b93249f89fc5a9d1e962ed8bc5ac0}\index{reti.ThemeManager@{reti.ThemeManager}!draw\_transition@{draw\_transition}}
+\index{draw\_transition@{draw\_transition}!reti.ThemeManager@{reti.ThemeManager}}
+\doxysubsubsection{\texorpdfstring{draw\_transition()}{draw\_transition()}}
+{\footnotesize\ttfamily \label{classreti_1_1_theme_manager_a9f6b93249f89fc5a9d1e962ed8bc5ac0} 
+reti.\+Theme\+Manager.\+draw\+\_\+transition (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Draws the full-screen fade effect during theme transition.
+@param surface The screen surface.
+\end{DoxyVerb}
+ \Hypertarget{classreti_1_1_theme_manager_a7231dd834c8669883c21c9d5a9ba0984}\index{reti.ThemeManager@{reti.ThemeManager}!get@{get}}
+\index{get@{get}!reti.ThemeManager@{reti.ThemeManager}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \label{classreti_1_1_theme_manager_a7231dd834c8669883c21c9d5a9ba0984} 
+reti.\+Theme\+Manager.\+get (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{key}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Returns a property from the current active theme.
+@param key The theme property key (e.g., "bg_color").
+\end{DoxyVerb}
+ \Hypertarget{classreti_1_1_theme_manager_acefa7a0bace35a347759e661c6165ece}\index{reti.ThemeManager@{reti.ThemeManager}!start\_transition@{start\_transition}}
+\index{start\_transition@{start\_transition}!reti.ThemeManager@{reti.ThemeManager}}
+\doxysubsubsection{\texorpdfstring{start\_transition()}{start\_transition()}}
+{\footnotesize\ttfamily \label{classreti_1_1_theme_manager_acefa7a0bace35a347759e661c6165ece} 
+reti.\+Theme\+Manager.\+start\+\_\+transition (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Initiates a visual transition between Dark and Light themes.
+\end{DoxyVerb}
+ \Hypertarget{classreti_1_1_theme_manager_afe718a8dda3c2b4dbb781af6c9ec792f}\index{reti.ThemeManager@{reti.ThemeManager}!update@{update}}
+\index{update@{update}!reti.ThemeManager@{reti.ThemeManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_theme_manager_afe718a8dda3c2b4dbb781af6c9ec792f} 
+reti.\+Theme\+Manager.\+update (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Updates the theme transition animation.
+@return True if the theme was swapped this frame, False otherwise.
+\end{DoxyVerb}
+ 
+
+\label{doc-variable-members}
+\Hypertarget{classreti_1_1_theme_manager_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classreti_1_1_theme_manager_a52b296e71a74dc13de55f7ba99589cb2}\index{reti.ThemeManager@{reti.ThemeManager}!themes@{themes}}
+\index{themes@{themes}!reti.ThemeManager@{reti.ThemeManager}}
+\doxysubsubsection{\texorpdfstring{themes}{themes}}
+{\footnotesize\ttfamily \label{classreti_1_1_theme_manager_a52b296e71a74dc13de55f7ba99589cb2} 
+dict reti.\+Theme\+Manager.\+themes}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}dark"{}}:\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bg\_color"{}}:\ (20,\ 20,\ 45),\ \textcolor{stringliteral}{"{}text\_color"{}}:\ (240,\ 240,\ 250),\ \textcolor{stringliteral}{"{}platform\_color"{}}:\ (100,\ 149,\ 237),\ \textcolor{stringliteral}{"{}particle\_color"{}}:\ (255,\ 255,\ 204),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}btn\_color"{}}:\ (60,\ 40,\ 90),\ \textcolor{stringliteral}{"{}btn\_hover"{}}:\ (80,\ 60,\ 110),\ \textcolor{stringliteral}{"{}btn\_active"{}}:\ (100,\ 70,\ 140),\ \textcolor{stringliteral}{"{}btn\_text\_color"{}}:\ (255,\ 255,\ 255),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}slider\_line"{}}:\ (150,\ 150,\ 180),\ \textcolor{stringliteral}{"{}slider\_knob"{}}:\ (255,\ 255,\ 255),\ \textcolor{stringliteral}{"{}modal\_bg"{}}:\ (30,\ 30,\ 60),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bg\_elements"{}}:\ [\ \{\textcolor{stringliteral}{"{}type"{}}:\ \textcolor{stringliteral}{"{}wave"{}},\ \textcolor{stringliteral}{"{}color"{}}:\ (60,\ 20,\ 80,\ 100),\ \textcolor{stringliteral}{"{}amp"{}}:\ 70,\ \textcolor{stringliteral}{"{}freq"{}}:\ 0.012,\ \textcolor{stringliteral}{"{}speed"{}}:\ 0.3,\ \textcolor{stringliteral}{"{}y"{}}:\ 610\},\ \{\textcolor{stringliteral}{"{}type"{}}:\ \textcolor{stringliteral}{"{}wave"{}},\ \textcolor{stringliteral}{"{}color"{}}:\ (80,\ 60,\ 140,\ 100),\ \textcolor{stringliteral}{"{}amp"{}}:\ 50,\ \textcolor{stringliteral}{"{}freq"{}}:\ 0.007,\ \textcolor{stringliteral}{"{}speed"{}}:\ -\/0.45,\ \textcolor{stringliteral}{"{}y"{}}:\ 620\},\ \{\textcolor{stringliteral}{"{}type"{}}:\ \textcolor{stringliteral}{"{}wave"{}},\ \textcolor{stringliteral}{"{}color"{}}:\ (40,\ 40,\ 100,\ 100),\ \textcolor{stringliteral}{"{}amp"{}}:\ 30,\ \textcolor{stringliteral}{"{}freq"{}}:\ 0.01,\ \textcolor{stringliteral}{"{}speed"{}}:\ 0.6,\ \textcolor{stringliteral}{"{}y"{}}:\ 600\}\ ],}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}has\_bg\_stars"{}}:\ \textcolor{keyword}{True},\ \textcolor{stringliteral}{"{}star\_style"{}}:\ \textcolor{stringliteral}{"{}glow"{}}\ }
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}light"{}}:\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bg\_color"{}}:\ BOHO\_BG,\ \textcolor{stringliteral}{"{}text\_color"{}}:\ (255,\ 255,\ 255),\ \textcolor{stringliteral}{"{}platform\_color"{}}:\ (20,\ 50,\ 100),\ \textcolor{stringliteral}{"{}particle\_color"{}}:\ \textcolor{keywordtype}{None},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}btn\_color"{}}:\ (20,\ 50,\ 100),\ \textcolor{stringliteral}{"{}btn\_hover"{}}:\ (40,\ 70,\ 130),\ \textcolor{stringliteral}{"{}btn\_active"{}}:\ (65,\ 105,\ 225),\ \textcolor{stringliteral}{"{}btn\_text\_color"{}}:\ (255,\ 255,\ 255),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}slider\_line"{}}:\ (255,\ 255,\ 255),\ \textcolor{stringliteral}{"{}slider\_knob"{}}:\ (20,\ 50,\ 100),\ \textcolor{stringliteral}{"{}modal\_bg"{}}:\ (135,\ 206,\ 250),}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bg\_elements"{}}:\ self.light\_clouds,\ \textcolor{stringliteral}{"{}has\_bg\_stars"{}}:\ \textcolor{keyword}{False},\ \textcolor{stringliteral}{"{}star\_style"{}}:\ \textcolor{stringliteral}{"{}ball"{}}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

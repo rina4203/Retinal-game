@@ -1,0 +1,97 @@
+\doxysection{reti.\+Game\+Over\+State Class Reference}
+\hypertarget{classreti_1_1_game_over_state}{}\label{classreti_1_1_game_over_state}\index{reti.GameOverState@{reti.GameOverState}}
+Inheritance diagram for reti.\+Game\+Over\+State\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classreti_1_1_game_over_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_game_over_state_a9673ceb880754e249f46e441bbc254d7}\label{classreti_1_1_game_over_state_a9673ceb880754e249f46e441bbc254d7} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game, score, song\+\_\+data=None)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_over_state_ab6db87817086b1c58b591d71e8c94b9a}{handle\+\_\+event}} (self, event)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_over_state_adecc8bdd2eb9fde151f0627e948f60bd}{update}} (self, dt)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_over_state_ac628853cf208172f4829cdde3741bc26}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_game_over_state_ae64ad124882eae97564508b60c07ef05}\label{classreti_1_1_game_over_state_ae64ad124882eae97564508b60c07ef05} 
+{\bfseries \+\_\+score} = score
+\item 
+\Hypertarget{classreti_1_1_game_over_state_a3d91478eee27c4880f55792d79e33686}\label{classreti_1_1_game_over_state_a3d91478eee27c4880f55792d79e33686} 
+{\bfseries \+\_\+high\+\_\+score} = self.\+\_\+game.\+get\+\_\+high\+\_\+score()
+\item 
+\Hypertarget{classreti_1_1_game_over_state_af6cecf40f834d05374125100c1851204}\label{classreti_1_1_game_over_state_af6cecf40f834d05374125100c1851204} 
+{\bfseries \+\_\+btn\+\_\+retry} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 400, 200, 50, "{}RETRY"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_game_over_state_a8347304eacd7388888ab79bd7e9f1bbd}\label{classreti_1_1_game_over_state_a8347304eacd7388888ab79bd7e9f1bbd} 
+{\bfseries \+\_\+btn\+\_\+menu} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 470, 200, 50, "{}MENU"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_game_over_state_aad99c188d55f5e6267e4ba77bd51e926}\label{classreti_1_1_game_over_state_aad99c188d55f5e6267e4ba77bd51e926} 
+{\bfseries \+\_\+song\+\_\+data} = song\+\_\+data
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+game} = game
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Game Over screen.
+@details Displays score, high score, and options to retry or exit.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_game_over_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_game_over_state_ac628853cf208172f4829cdde3741bc26}\index{reti.GameOverState@{reti.GameOverState}!draw@{draw}}
+\index{draw@{draw}!reti.GameOverState@{reti.GameOverState}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_over_state_ac628853cf208172f4829cdde3741bc26} 
+reti.\+Game\+Over\+State.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_game_over_state_ab6db87817086b1c58b591d71e8c94b9a}\index{reti.GameOverState@{reti.GameOverState}!handle\_event@{handle\_event}}
+\index{handle\_event@{handle\_event}!reti.GameOverState@{reti.GameOverState}}
+\doxysubsubsection{\texorpdfstring{handle\_event()}{handle\_event()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_over_state_ab6db87817086b1c58b591d71e8c94b9a} 
+reti.\+Game\+Over\+State.\+handle\+\_\+event (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{event}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Handles Pygame events for this state.
+@param event The Pygame event object.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state_a0fe3e7fa1c372257b429dc900b2e3d6f}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_game_over_state_adecc8bdd2eb9fde151f0627e948f60bd}\index{reti.GameOverState@{reti.GameOverState}!update@{update}}
+\index{update@{update}!reti.GameOverState@{reti.GameOverState}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_over_state_adecc8bdd2eb9fde151f0627e948f60bd} 
+reti.\+Game\+Over\+State.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

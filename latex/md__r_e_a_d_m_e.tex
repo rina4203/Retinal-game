@@ -1,0 +1,104 @@
+\chapter{RETINAL’ — Rhythm \& Arcade Catcher }
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{RETINAL’ — Rhythm \& Arcade Catcher@{RETINAL’ — Rhythm \& Arcade Catcher}}
+\label{md__r_e_a_d_m_e_autotoc_md0}%
+\Hypertarget{md__r_e_a_d_m_e_autotoc_md0}%
+
+
+{\bfseries{RETINAL’}} is a 2D arcade game that blends fast-\/paced object-\/catching mechanics with musical rhythm elements. Developed as a capstone project for the {\bfseries{Object-\/\+Oriented Programming (2025-\/2026)}} course, it demonstrates advanced software engineering practices including design patterns, unit testing, and localization.
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md2}{}\doxysection{\texorpdfstring{📖 About the Game}{📖 About the Game}}\label{md__r_e_a_d_m_e_autotoc_md2}
+The game immerses players in a dual-\/atmosphere world (Day/\+Night) where reflexes and rhythm are key. Players control a basket/paddle at the bottom of the screen to catch falling stars and notes. The goal is to survive as long as possible or complete a song without missing too many beats.
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md4}{}\doxysection{\texorpdfstring{🎮 Game Modes}{🎮 Game Modes}}\label{md__r_e_a_d_m_e_autotoc_md4}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md5}{}\doxysubsection{\texorpdfstring{🎵 Rhythm Mode}{🎵 Rhythm Mode}}\label{md__r_e_a_d_m_e_autotoc_md5}
+
+\begin{DoxyItemize}
+\item {\bfseries{Concept\+:}} Catch notes synchronized to the beat of a specific music track.
+\item {\bfseries{Selection\+:}} Players choose from a playlist of songs (defined in {\ttfamily notes.\+json}).
+\item {\bfseries{Win/\+Loss\+:}} The game tracks your combo. Missing {\bfseries{10 notes}} results in a "{}\+Game Over"{}.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md6}{}\doxysubsection{\texorpdfstring{♾️ Endless Mode}{♾️ Endless Mode}}\label{md__r_e_a_d_m_e_autotoc_md6}
+
+\begin{DoxyItemize}
+\item {\bfseries{Concept\+:}} A pure test of endurance without a specific melody.
+\item {\bfseries{Dynamic Difficulty\+:}} The game speed increases progressively as you collect more points.
+\item {\bfseries{Economy\+:}} Random "{}\+Currency"{} items fall alongside stars, allowing players to earn money for the shop.
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md8}{}\doxysection{\texorpdfstring{✨ Key Features}{✨ Key Features}}\label{md__r_e_a_d_m_e_autotoc_md8}
+
+\begin{DoxyItemize}
+\item {\bfseries{Visual Themes\+:}} Real-\/time transition between {\bfseries{Dark (Night)}} and {\bfseries{Light (Day)}} modes, affecting background assets and particle colors.
+\item {\bfseries{Internationalization (i18n)\+:}} Full support for {\bfseries{English (EN)}} and {\bfseries{Ukrainian (UA)}} languages, toggleable in settings.
+\item {\bfseries{In-\/\+Game Shop\+:}} A functional economy system allowing players to purchase\+:
+\begin{DoxyItemize}
+\item Paddle Colors
+\item Paddle Sizes
+\item Paddle Shapes
+\end{DoxyItemize}
+\item {\bfseries{Persistence\+:}} Uses JSON serialization to save\+:
+\begin{DoxyItemize}
+\item High Scores
+\item Currency Balance
+\item Inventory \& Equipped Items
+\end{DoxyItemize}
+\item {\bfseries{Settings\+:}} Adjustable Master Volume, SFX Volume, and Difficulty levels.
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md10}{}\doxysection{\texorpdfstring{🏗️ Technical Architecture}{🏗️ Technical Architecture}}\label{md__r_e_a_d_m_e_autotoc_md10}
+This project strictly adheres to {\bfseries{OOP principles}} and implements specific design patterns required by the course curriculum.\hypertarget{md__r_e_a_d_m_e_autotoc_md11}{}\doxysubsection{\texorpdfstring{Design Patterns}{Design Patterns}}\label{md__r_e_a_d_m_e_autotoc_md11}
+
+\begin{DoxyItemize}
+\item {\bfseries{State Pattern\+:}} Manages game screens ({\ttfamily Menu\+State}, {\ttfamily Playing\+State}, {\ttfamily Shop\+State}, {\ttfamily Settings\+State}), allowing for clean transitions and isolated logic.
+\item {\bfseries{Singleton Pattern\+:}} Used for global managers such as {\ttfamily Localization\+Manager} and {\ttfamily Theme\+Manager} to ensure consistent state across modules.
+\item {\bfseries{Factory / Object Pool\+:}} Implemented via {\ttfamily Object\+Manager} to efficiently handle the lifecycle of falling objects (Stars, Particles).
+\item {\bfseries{Decorator Pattern\+:}} Used for {\bfseries{Microbenchmarking}} ({\ttfamily @measure\+\_\+time}) to analyze the performance of asset loading.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md12}{}\doxysubsection{\texorpdfstring{Quality Assurance}{Quality Assurance}}\label{md__r_e_a_d_m_e_autotoc_md12}
+
+\begin{DoxyItemize}
+\item {\bfseries{Unit Tests\+:}} A robust suite ({\ttfamily test\+\_\+reti\+\_\+full.\+py}) using {\ttfamily unittest.\+mock} to simulate Pygame interactions (Headless Testing).
+\item {\bfseries{Logging\+:}} Integrated {\ttfamily logging} module to track runtime events, errors, and performance metrics in {\ttfamily game\+\_\+log.\+log}.
+\item {\bfseries{Error Handling\+:}} Robust {\ttfamily try-\/except} blocks for file I/O to prevent crashes if save data is corrupted.
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md14}{}\doxysection{\texorpdfstring{🚀 Installation \& Setup}{🚀 Installation \& Setup}}\label{md__r_e_a_d_m_e_autotoc_md14}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md15}{}\doxysubsection{\texorpdfstring{Prerequisites}{Prerequisites}}\label{md__r_e_a_d_m_e_autotoc_md15}
+
+\begin{DoxyItemize}
+\item Python 3.\+8 or higher
+\item Pygame library
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md16}{}\doxysubsection{\texorpdfstring{Steps}{Steps}}\label{md__r_e_a_d_m_e_autotoc_md16}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Clone the Repository\+:}} {\ttfamily bash git clone \mbox{[}\href{https://github.com/yourusername/RETINAL.git}{\texttt{https\+://github.\+com/yourusername/\+RETINAL.\+git}}\mbox{]}(\href{https://github.com/yourusername/RETINAL.git}{\texttt{https\+://github.\+com/yourusername/\+RETINAL.\+git}}) cd RETINAL }
+\item {\bfseries{Create a Virtual Environment (Recommended)\+:}} {\ttfamily bash python -\/m venv venv @section autotoc\+\_\+md17 Windows\+: venv\textbackslash{}Scripts\textbackslash{}activate @section autotoc\+\_\+md18 Mac/\+Linux\+: source venv/bin/activate }
+\item {\bfseries{Install Dependencies\+:}} {\ttfamily bash pip install pygame }
+\item {\bfseries{Run the Game\+:}} {\ttfamily bash python reti.\+py }
+\end{DoxyEnumerate}
+
+\begin{quote}
+{\bfseries{Note\+:}} If {\ttfamily notes.\+json} is missing, run {\ttfamily python note\+\_\+editor.\+py} to generate the default level data. \end{quote}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md20}{}\doxysubsection{\texorpdfstring{🕹️ Controls}{🕹️ Controls}}\label{md__r_e_a_d_m_e_autotoc_md20}
+
+\begin{DoxyTable}{3}{}{}{1}
+\SetCell{bg=\tableheadbgcolor,font=\bfseries}Action  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Primary Key  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Alternative Key  \\
+{\bfseries{Move Left}}  &\SetCell{c}{\ttfamily ←} Left Arrow  &\SetCell{c}{\ttfamily A}  \\
+{\bfseries{Move Right}}  &\SetCell{c}{\ttfamily →} Right Arrow  &\SetCell{c}{\ttfamily D}  \\
+{\bfseries{Pause Game}}  &\SetCell{c}{\ttfamily Space}  &\SetCell{c}-\/  \\
+{\bfseries{Back / Menu}}  &\SetCell{c}{\ttfamily Esc}  &\SetCell{c}-\/  \\
+{\bfseries{Interact}}  &\SetCell{c}{\ttfamily Left Mouse Button}  &\SetCell{c}-\/  \\
+\end{DoxyTable}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md22}{}\doxysubsection{\texorpdfstring{🧪 Unit Testing}{🧪 Unit Testing}}\label{md__r_e_a_d_m_e_autotoc_md22}
+The project includes 55+ automated tests covering Logic, Physics, Economy, and Localization.
+
+{\bfseries{To run the tests\+:}} \`{}\`{}\`{}bash python test\+\_\+reti\+\_\+full.\+py 

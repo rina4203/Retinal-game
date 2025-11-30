@@ -1,0 +1,112 @@
+\doxysection{reti.\+Menu\+State Class Reference}
+\hypertarget{classreti_1_1_menu_state}{}\label{classreti_1_1_menu_state}\index{reti.MenuState@{reti.MenuState}}
+Inheritance diagram for reti.\+Menu\+State\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classreti_1_1_menu_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_menu_state_aef798c27b7c1cb652b0e927e2deef971}\label{classreti_1_1_menu_state_aef798c27b7c1cb652b0e927e2deef971} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\item 
+\mbox{\hyperlink{classreti_1_1_menu_state_a1f44a0dcfcb9d5b576ec3828003bf9d5}{handle\+\_\+event}} (self, event)
+\item 
+\mbox{\hyperlink{classreti_1_1_menu_state_a8d4b805101c9b9d01c0cd2847247e069}{update}} (self, dt)
+\item 
+\mbox{\hyperlink{classreti_1_1_menu_state_a78f82e72d17570f875d829b05a37d362}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_menu_state_a9e963d41f65d9f474e207095c8d00a71}\label{classreti_1_1_menu_state_a9e963d41f65d9f474e207095c8d00a71} 
+{\bfseries \+\_\+update\+\_\+theme\+\_\+btn} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_menu_state_a46e1496516ba070e5b91735e86e11cdd}\label{classreti_1_1_menu_state_a46e1496516ba070e5b91735e86e11cdd} 
+{\bfseries \+\_\+btn\+\_\+start} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 250, 200, 60, "{}START"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_menu_state_a25e14ce0187b8122da26ad3b2c8417d6}\label{classreti_1_1_menu_state_a25e14ce0187b8122da26ad3b2c8417d6} 
+{\bfseries \+\_\+btn\+\_\+rhythm} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(30, 340, 200, 60, "{}RHYTHM"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_menu_state_a2892410c858ac88dfe1c26f0d22dec17}\label{classreti_1_1_menu_state_a2892410c858ac88dfe1c26f0d22dec17} 
+{\bfseries \+\_\+btn\+\_\+theme} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(30, 420, 200, 60, "{}"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_menu_state_aed387045c9c489961e84361f81a2363b}\label{classreti_1_1_menu_state_aed387045c9c489961e84361f81a2363b} 
+{\bfseries \+\_\+btn\+\_\+shop} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(270, 340, 200, 60, "{}SHOP"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_menu_state_a6eac143e8d534f78ddc63939ef9ff71b}\label{classreti_1_1_menu_state_a6eac143e8d534f78ddc63939ef9ff71b} 
+{\bfseries \+\_\+btn\+\_\+settings} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(270, 420, 200, 60, "{}SETTINGS"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_menu_state_a8664df8d753c1d8fb54774af2e7b8c02}\label{classreti_1_1_menu_state_a8664df8d753c1d8fb54774af2e7b8c02} 
+{\bfseries \+\_\+btn\+\_\+quit} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, 520, 200, 60, "{}QUIT"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_menu_state_aa33cfbf05db1753f7239d899be8ac496}\label{classreti_1_1_menu_state_aa33cfbf05db1753f7239d899be8ac496} 
+list {\bfseries \+\_\+buttons} = \mbox{[}self.\+\_\+btn\+\_\+start, self.\+\_\+btn\+\_\+rhythm, self.\+\_\+btn\+\_\+shop, self.\+\_\+btn\+\_\+settings, self.\+\_\+btn\+\_\+theme, self.\+\_\+btn\+\_\+quit\mbox{]}
+\item 
+\Hypertarget{classreti_1_1_menu_state_af194455884471113b6bbd98b1a7297b0}\label{classreti_1_1_menu_state_af194455884471113b6bbd98b1a7297b0} 
+self.\+\_\+confirm\+\_\+modal.\+update();return {\bfseries \+\_\+confirm\+\_\+modal} = None
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+game} = game
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief The Main Menu state.
+@details Provides access to Play, Shop, Settings, Theme toggle, and Quit.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_menu_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_menu_state_a78f82e72d17570f875d829b05a37d362}\index{reti.MenuState@{reti.MenuState}!draw@{draw}}
+\index{draw@{draw}!reti.MenuState@{reti.MenuState}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_menu_state_a78f82e72d17570f875d829b05a37d362} 
+reti.\+Menu\+State.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_menu_state_a1f44a0dcfcb9d5b576ec3828003bf9d5}\index{reti.MenuState@{reti.MenuState}!handle\_event@{handle\_event}}
+\index{handle\_event@{handle\_event}!reti.MenuState@{reti.MenuState}}
+\doxysubsubsection{\texorpdfstring{handle\_event()}{handle\_event()}}
+{\footnotesize\ttfamily \label{classreti_1_1_menu_state_a1f44a0dcfcb9d5b576ec3828003bf9d5} 
+reti.\+Menu\+State.\+handle\+\_\+event (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{event}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Handles Pygame events for this state.
+@param event The Pygame event object.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state_a0fe3e7fa1c372257b429dc900b2e3d6f}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_menu_state_a8d4b805101c9b9d01c0cd2847247e069}\index{reti.MenuState@{reti.MenuState}!update@{update}}
+\index{update@{update}!reti.MenuState@{reti.MenuState}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_menu_state_a8d4b805101c9b9d01c0cd2847247e069} 
+reti.\+Menu\+State.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

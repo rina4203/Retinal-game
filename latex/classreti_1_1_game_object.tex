@@ -1,0 +1,58 @@
+\doxysection{reti.\+Game\+Object Class Reference}
+\hypertarget{classreti_1_1_game_object}{}\label{classreti_1_1_game_object}\index{reti.GameObject@{reti.GameObject}}
+Inheritance diagram for reti.\+Game\+Object\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.335766cm]{classreti_1_1_game_object}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classreti_1_1_game_object_abeb6d866e04c396b9cc096648fb853ac}{update}} (self, dt, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_object_a97d44c421ce3c3a1bd6bace747d0eef9}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Abstract base class for all game objects.
+@details Enforces the implementation of update and draw methods.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_game_object_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_game_object_a97d44c421ce3c3a1bd6bace747d0eef9}\index{reti.GameObject@{reti.GameObject}!draw@{draw}}
+\index{draw@{draw}!reti.GameObject@{reti.GameObject}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_object_a97d44c421ce3c3a1bd6bace747d0eef9} 
+reti.\+Game\+Object.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Draws the object to the screen.
+@param surface The Pygame surface to render on.
+\end{DoxyVerb}
+ 
+
+Reimplemented in \mbox{\hyperlink{classreti_1_1_basket_a30cd0782c5d6feab9b02795f5f342b4b}{reti.\+Basket}}, \mbox{\hyperlink{classreti_1_1_button_abec618d11b2c5595a891ffda8ac8b728}{reti.\+Button}}, \mbox{\hyperlink{classreti_1_1_currency_aa7722bba6b62fb5c2c6b0dd47a5f8e12}{reti.\+Currency}}, \mbox{\hyperlink{classreti_1_1_particle_a125faee48550e38f32dfd3c1825d0afd}{reti.\+Particle}}, \mbox{\hyperlink{classreti_1_1_procedural_wave_adfc65103ce5e2931ef9e4ea6d24c86ae}{reti.\+Procedural\+Wave}}, \mbox{\hyperlink{classreti_1_1_shop_item_button_af24d199cd180ad1eb84a11ffaeb8c461}{reti.\+Shop\+Item\+Button}}, \mbox{\hyperlink{classreti_1_1_slider_affa8df3223bd339b4836602a6191ec61}{reti.\+Slider}}, and \mbox{\hyperlink{classreti_1_1_star_aae4187405618efafe511af6a3effa691}{reti.\+Star}}.
+
+\Hypertarget{classreti_1_1_game_object_abeb6d866e04c396b9cc096648fb853ac}\index{reti.GameObject@{reti.GameObject}!update@{update}}
+\index{update@{update}!reti.GameObject@{reti.GameObject}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_object_abeb6d866e04c396b9cc096648fb853ac} 
+reti.\+Game\+Object.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Updates the object state.
+@param dt Delta time (time since last frame in seconds).
+@param kwargs Additional context arguments (e.g., input keys, mouse pos).
+\end{DoxyVerb}
+ 
+
+Reimplemented in \mbox{\hyperlink{classreti_1_1_basket_a400b5b637a509ded99ec5f49863ea74b}{reti.\+Basket}}, \mbox{\hyperlink{classreti_1_1_button_ae405a49dfbf1aa41a33e3199d6a784b2}{reti.\+Button}}, \mbox{\hyperlink{classreti_1_1_currency_a9789eca2ed205fa80be59873c42bfa1a}{reti.\+Currency}}, \mbox{\hyperlink{classreti_1_1_particle_a78b8bd3f54d2e222728b48cc5d304d80}{reti.\+Particle}}, \mbox{\hyperlink{classreti_1_1_procedural_wave_abe221e9fbc3603dbd6620c81a67ff49c}{reti.\+Procedural\+Wave}}, \mbox{\hyperlink{classreti_1_1_shop_item_button_a3e41bc3631b4f683b1124176d24e2f3a}{reti.\+Shop\+Item\+Button}}, \mbox{\hyperlink{classreti_1_1_star_aca5952248ce7f9120dd3802b83435208}{reti.\+Star}}, and \mbox{\hyperlink{classreti_1_1_u_i_element_ab36be4aaf13c3ad796584ece49eb80cd}{reti.\+UIElement}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}
