@@ -1,0 +1,91 @@
+\doxysection{reti.\+Shop\+Item\+Button Class Reference}
+\hypertarget{classreti_1_1_shop_item_button}{}\label{classreti_1_1_shop_item_button}\index{reti.ShopItemButton@{reti.ShopItemButton}}
+Inheritance diagram for reti.\+Shop\+Item\+Button\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{classreti_1_1_shop_item_button}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_shop_item_button_a373035f5c85ec31c1fcd44cf50d7f383}\label{classreti_1_1_shop_item_button_a373035f5c85ec31c1fcd44cf50d7f383} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, x, y, w, h, name, price, category, game, val=None)
+\item 
+\Hypertarget{classreti_1_1_shop_item_button_af7920cd104341c33fa6526fc4e842fbe}\label{classreti_1_1_shop_item_button_af7920cd104341c33fa6526fc4e842fbe} 
+{\bfseries handle\+\_\+event} (self, event)
+\item 
+\mbox{\hyperlink{classreti_1_1_shop_item_button_a3e41bc3631b4f683b1124176d24e2f3a}{update}} (self, dt, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{classreti_1_1_shop_item_button_af24d199cd180ad1eb84a11ffaeb8c461}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classreti_1_1_u_i_element}{reti.\+UIElement}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, x, y, w, h)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_shop_item_button_a3fb9b1876888b05872e30012e148e9d1}\label{classreti_1_1_shop_item_button_a3fb9b1876888b05872e30012e148e9d1} 
+bool {\bfseries \+\_\+name} = False
+\item 
+\Hypertarget{classreti_1_1_shop_item_button_a59554b9e09091ef1f0afe75b8c4a3eab}\label{classreti_1_1_shop_item_button_a59554b9e09091ef1f0afe75b8c4a3eab} 
+{\bfseries \+\_\+category}
+\item 
+\Hypertarget{classreti_1_1_shop_item_button_a695d872cd587f989e326b9766ac0682f}\label{classreti_1_1_shop_item_button_a695d872cd587f989e326b9766ac0682f} 
+{\bfseries \+\_\+val}
+\item 
+\Hypertarget{classreti_1_1_shop_item_button_aad93bf7bf08262db9fde43ea1398856d}\label{classreti_1_1_shop_item_button_aad93bf7bf08262db9fde43ea1398856d} 
+status\+\_\+color {\bfseries \+\_\+price}
+\item 
+\Hypertarget{classreti_1_1_shop_item_button_abde656a32f0c07ca252c98b496d9147a}\label{classreti_1_1_shop_item_button_abde656a32f0c07ca252c98b496d9147a} 
+bool {\bfseries \+\_\+is\+\_\+hovered} = self.\+\_\+rect.\+collidepoint(mouse\+\_\+pos) if mouse\+\_\+pos else False
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classreti_1_1_u_i_element}{reti.\+UIElement}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+rect} = pygame.\+Rect(x, y, w, h)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief A button representing an item in the shop.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_shop_item_button_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_shop_item_button_af24d199cd180ad1eb84a11ffaeb8c461}\index{reti.ShopItemButton@{reti.ShopItemButton}!draw@{draw}}
+\index{draw@{draw}!reti.ShopItemButton@{reti.ShopItemButton}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_shop_item_button_af24d199cd180ad1eb84a11ffaeb8c461} 
+reti.\+Shop\+Item\+Button.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Draws the object to the screen.
+@param surface The Pygame surface to render on.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_object_a97d44c421ce3c3a1bd6bace747d0eef9}{reti.\+Game\+Object}}.
+
+\Hypertarget{classreti_1_1_shop_item_button_a3e41bc3631b4f683b1124176d24e2f3a}\index{reti.ShopItemButton@{reti.ShopItemButton}!update@{update}}
+\index{update@{update}!reti.ShopItemButton@{reti.ShopItemButton}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_shop_item_button_a3e41bc3631b4f683b1124176d24e2f3a} 
+reti.\+Shop\+Item\+Button.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Updates the object state.
+@param dt Delta time (time since last frame in seconds).
+@param kwargs Additional context arguments (e.g., input keys, mouse pos).
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_u_i_element_ab36be4aaf13c3ad796584ece49eb80cd}{reti.\+UIElement}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

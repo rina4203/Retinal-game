@@ -1,0 +1,133 @@
+\doxysection{reti.\+Star Class Reference}
+\hypertarget{classreti_1_1_star}{}\label{classreti_1_1_star}\index{reti.Star@{reti.Star}}
+Inheritance diagram for reti.\+Star\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classreti_1_1_star}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_star_a5bf4993c22b1c5e0c89d2dd0a2664073}\label{classreti_1_1_star_a5bf4993c22b1c5e0c89d2dd0a2664073} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, speed\+\_\+multiplier, game\+\_\+ref, fixed\+\_\+x=None, note\+\_\+name=None)
+\item 
+\Hypertarget{classreti_1_1_star_a7c109797d57157306318f7407e2a4c39}\label{classreti_1_1_star_a7c109797d57157306318f7407e2a4c39} 
+{\bfseries get\+\_\+note\+\_\+name} (self)
+\item 
+\Hypertarget{classreti_1_1_star_a8c6801239bf582f946f2a61fd71270c6}\label{classreti_1_1_star_a8c6801239bf582f946f2a61fd71270c6} 
+str {\bfseries get\+\_\+size\+\_\+category} (self)
+\item 
+\Hypertarget{classreti_1_1_star_a3f59f0e0db5cf9202dda4ed5ec350d1e}\label{classreti_1_1_star_a3f59f0e0db5cf9202dda4ed5ec350d1e} 
+{\bfseries get\+\_\+color} (self)
+\item 
+\Hypertarget{classreti_1_1_star_ac20f999056f7a4ef351eb716fb9584b7}\label{classreti_1_1_star_ac20f999056f7a4ef351eb716fb9584b7} 
+{\bfseries set\+\_\+y} (self, y)
+\item 
+\mbox{\hyperlink{classreti_1_1_star_aca5952248ce7f9120dd3802b83435208}{update}} (self, dt, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\Hypertarget{classreti_1_1_star_af3ed53f70f09b45f3e606d1c6d7da6b0}\label{classreti_1_1_star_af3ed53f70f09b45f3e606d1c6d7da6b0} 
+float {\bfseries get\+\_\+y} (self)
+\item 
+\Hypertarget{classreti_1_1_star_ad97235c138ec428058bbc0680b4024e0}\label{classreti_1_1_star_ad97235c138ec428058bbc0680b4024e0} 
+int {\bfseries get\+\_\+points} (self)
+\item 
+\Hypertarget{classreti_1_1_star_a3b020177b1d4c2703a9c91d3826ed5ae}\label{classreti_1_1_star_a3b020177b1d4c2703a9c91d3826ed5ae} 
+tuple\mbox{[}float, float\mbox{]} {\bfseries get\+\_\+pos} (self)
+\item 
+\Hypertarget{classreti_1_1_star_abb32ebeb3fb4ab9360dfaef5d1617e1d}\label{classreti_1_1_star_abb32ebeb3fb4ab9360dfaef5d1617e1d} 
+pygame.\+Rect {\bfseries get\+\_\+rect} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_star_aae4187405618efafe511af6a3effa691}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_star_aa8f6e94c097228a9d9b69ae6af350705}\label{classreti_1_1_star_aa8f6e94c097228a9d9b69ae6af350705} 
+{\bfseries \+\_\+game} = game\+\_\+ref
+\item 
+\Hypertarget{classreti_1_1_star_aba0065dab5638d85077b8d9d480a2952}\label{classreti_1_1_star_aba0065dab5638d85077b8d9d480a2952} 
+bool {\bfseries \+\_\+x} = True
+\item 
+\Hypertarget{classreti_1_1_star_a8b344a17a78ca12e5069ecb25107ed55}\label{classreti_1_1_star_a8b344a17a78ca12e5069ecb25107ed55} 
+{\bfseries \+\_\+y} = random.\+randint(-\/200, -\/20)
+\item 
+\Hypertarget{classreti_1_1_star_a2cc0be62d0b14fed2b0b2fe9283bc8d7}\label{classreti_1_1_star_a2cc0be62d0b14fed2b0b2fe9283bc8d7} 
+{\bfseries \+\_\+z} = random.\+uniform(0.\+1, 1.\+0)
+\item 
+\Hypertarget{classreti_1_1_star_ac950ea418a9e1c87b5974ce7b368d3df}\label{classreti_1_1_star_ac950ea418a9e1c87b5974ce7b368d3df} 
+{\bfseries \+\_\+base\+\_\+speed} = random.\+uniform(1.\+4, 1.\+6)
+\item 
+\Hypertarget{classreti_1_1_star_ac37aa6e5df68e12530b2211823fa99c4}\label{classreti_1_1_star_ac37aa6e5df68e12530b2211823fa99c4} 
+{\bfseries \+\_\+vel} = self.\+\_\+base\+\_\+speed \texorpdfstring{$\ast$}{*} speed\+\_\+multiplier
+\item 
+\Hypertarget{classreti_1_1_star_aabbf7521b7d6290c92561641e3d40831}\label{classreti_1_1_star_aabbf7521b7d6290c92561641e3d40831} 
+int {\bfseries \+\_\+base\+\_\+size} = 5 + self.\+\_\+z \texorpdfstring{$\ast$}{*} 5
+\item 
+\Hypertarget{classreti_1_1_star_a38a0db265ab4a79018a27731ba2d8fc9}\label{classreti_1_1_star_a38a0db265ab4a79018a27731ba2d8fc9} 
+{\bfseries \+\_\+points} = int(15 -\/ (self.\+\_\+z \texorpdfstring{$\ast$}{*} 10))
+\item 
+\Hypertarget{classreti_1_1_star_aa5cb0df4bd9b9fe80558db1bb4bd55d9}\label{classreti_1_1_star_aa5cb0df4bd9b9fe80558db1bb4bd55d9} 
+{\bfseries \+\_\+blink\+\_\+timer} = random.\+uniform(0, 2 \texorpdfstring{$\ast$}{*} math.\+pi)
+\item 
+\Hypertarget{classreti_1_1_star_afb6f7d0a33d58d66ece29b5c82cf58ea}\label{classreti_1_1_star_afb6f7d0a33d58d66ece29b5c82cf58ea} 
+{\bfseries \+\_\+blink\+\_\+speed} = random.\+uniform(1.\+0, 3.\+0)
+\item 
+\Hypertarget{classreti_1_1_star_a36a0d4045b09273cbc4e55f066bcc4b9}\label{classreti_1_1_star_a36a0d4045b09273cbc4e55f066bcc4b9} 
+list {\bfseries \+\_\+trail} = 15
+\item 
+\Hypertarget{classreti_1_1_star_a2501624510328a3afb08ab9c639c7f87}\label{classreti_1_1_star_a2501624510328a3afb08ab9c639c7f87} 
+{\bfseries \+\_\+note\+\_\+name} = note\+\_\+name
+\item 
+\Hypertarget{classreti_1_1_star_a39e1204f4229285ea6e39ee7e6315626}\label{classreti_1_1_star_a39e1204f4229285ea6e39ee7e6315626} 
+{\bfseries \+\_\+specific\+\_\+color} = random.\+choice(theme\+\_\+mgr.\+light\+\_\+theme\+\_\+star\+\_\+colors)
+\item 
+\Hypertarget{classreti_1_1_star_a682a0d6da82604c33d4d14feb43d4967}\label{classreti_1_1_star_a682a0d6da82604c33d4d14feb43d4967} 
+{\bfseries \+\_\+is\+\_\+rhythm\+\_\+note}
+\item 
+\Hypertarget{classreti_1_1_star_a01509cac9688dcd77894d4a70c1e7cd4}\label{classreti_1_1_star_a01509cac9688dcd77894d4a70c1e7cd4} 
+self.\+\_\+trail.\+pop(0) {\bfseries \+\_\+max\+\_\+trail\+\_\+length}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Falling item representing a note or score object.
+@details Can be a random arcade star or a rhythm game note (with a trail).
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_star_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_star_aae4187405618efafe511af6a3effa691}\index{reti.Star@{reti.Star}!draw@{draw}}
+\index{draw@{draw}!reti.Star@{reti.Star}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_star_aae4187405618efafe511af6a3effa691} 
+reti.\+Star.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Draws the object to the screen.
+@param surface The Pygame surface to render on.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_object_a97d44c421ce3c3a1bd6bace747d0eef9}{reti.\+Game\+Object}}.
+
+\Hypertarget{classreti_1_1_star_aca5952248ce7f9120dd3802b83435208}\index{reti.Star@{reti.Star}!update@{update}}
+\index{update@{update}!reti.Star@{reti.Star}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_star_aca5952248ce7f9120dd3802b83435208} 
+reti.\+Star.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Updates the object state.
+@param dt Delta time (time since last frame in seconds).
+@param kwargs Additional context arguments (e.g., input keys, mouse pos).
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_object_abeb6d866e04c396b9cc096648fb853ac}{reti.\+Game\+Object}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

@@ -1,0 +1,93 @@
+\doxysection{reti.\+Paused\+State Class Reference}
+\hypertarget{classreti_1_1_paused_state}{}\label{classreti_1_1_paused_state}\index{reti.PausedState@{reti.PausedState}}
+Inheritance diagram for reti.\+Paused\+State\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classreti_1_1_paused_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_paused_state_aa2452c32ae497ae86fe75db38e21bcf2}\label{classreti_1_1_paused_state_aa2452c32ae497ae86fe75db38e21bcf2} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game, previous\+\_\+state)
+\item 
+\mbox{\hyperlink{classreti_1_1_paused_state_a495d89f15bbae1b99f738fd25ceba9b5}{handle\+\_\+event}} (self, event)
+\item 
+\mbox{\hyperlink{classreti_1_1_paused_state_ae5cc839e56497923b9f0a22a51daf353}{update}} (self, dt)
+\item 
+\mbox{\hyperlink{classreti_1_1_paused_state_aab73f898a6673c6dcdcd0e996b1afe2f}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_paused_state_a05407b042640adee394516c750a0c9e3}\label{classreti_1_1_paused_state_a05407b042640adee394516c750a0c9e3} 
+{\bfseries \+\_\+previous\+\_\+state} = previous\+\_\+state
+\item 
+\Hypertarget{classreti_1_1_paused_state_a52e20c3db9c4a03a9681ed7c6d9d1204}\label{classreti_1_1_paused_state_a52e20c3db9c4a03a9681ed7c6d9d1204} 
+{\bfseries \+\_\+font} = game.\+FONT\+\_\+\+BIG
+\item 
+\Hypertarget{classreti_1_1_paused_state_a5e8e2c06eb1bd91bf01975e337a06efc}\label{classreti_1_1_paused_state_a5e8e2c06eb1bd91bf01975e337a06efc} 
+{\bfseries \+\_\+btn\+\_\+resume} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, HEIGHT//2 -\/ 30, 200, 60, "{}RESUME"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\item 
+\Hypertarget{classreti_1_1_paused_state_a8d12de669cf011a7883ab2737fbddb73}\label{classreti_1_1_paused_state_a8d12de669cf011a7883ab2737fbddb73} 
+{\bfseries \+\_\+btn\+\_\+menu} = \mbox{\hyperlink{classreti_1_1_button}{Button}}(WIDTH//2 -\/ 100, HEIGHT//2 + 50, 200, 60, "{}MENU"{}, "{}normal"{}, game.\+FONT\+\_\+\+MEDIUM)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+game} = game
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Pause screen overlay.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_paused_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_paused_state_aab73f898a6673c6dcdcd0e996b1afe2f}\index{reti.PausedState@{reti.PausedState}!draw@{draw}}
+\index{draw@{draw}!reti.PausedState@{reti.PausedState}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_paused_state_aab73f898a6673c6dcdcd0e996b1afe2f} 
+reti.\+Paused\+State.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_paused_state_a495d89f15bbae1b99f738fd25ceba9b5}\index{reti.PausedState@{reti.PausedState}!handle\_event@{handle\_event}}
+\index{handle\_event@{handle\_event}!reti.PausedState@{reti.PausedState}}
+\doxysubsubsection{\texorpdfstring{handle\_event()}{handle\_event()}}
+{\footnotesize\ttfamily \label{classreti_1_1_paused_state_a495d89f15bbae1b99f738fd25ceba9b5} 
+reti.\+Paused\+State.\+handle\+\_\+event (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{event}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Handles Pygame events for this state.
+@param event The Pygame event object.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state_a0fe3e7fa1c372257b429dc900b2e3d6f}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_paused_state_ae5cc839e56497923b9f0a22a51daf353}\index{reti.PausedState@{reti.PausedState}!update@{update}}
+\index{update@{update}!reti.PausedState@{reti.PausedState}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_paused_state_ae5cc839e56497923b9f0a22a51daf353} 
+reti.\+Paused\+State.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

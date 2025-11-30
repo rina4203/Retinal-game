@@ -1,0 +1,89 @@
+\doxysection{reti.\+Slider Class Reference}
+\hypertarget{classreti_1_1_slider}{}\label{classreti_1_1_slider}\index{reti.Slider@{reti.Slider}}
+Inheritance diagram for reti.\+Slider\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{classreti_1_1_slider}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_slider_a54fa239bd41265dbf2d867b36d64af6c}\label{classreti_1_1_slider_a54fa239bd41265dbf2d867b36d64af6c} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, x, y, w, h, min\+\_\+val, max\+\_\+val, initial\+\_\+val, font)
+\item 
+\mbox{\hyperlink{classreti_1_1_slider_aef3d93ecbb8fe8ce207214ca85aee0f7}{handle\+\_\+event}} (self, event)
+\item 
+\Hypertarget{classreti_1_1_slider_ab15c769a87656e6ae3b2ca2864b7bf2b}\label{classreti_1_1_slider_ab15c769a87656e6ae3b2ca2864b7bf2b} 
+{\bfseries get\+\_\+value} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_slider_affa8df3223bd339b4836602a6191ec61}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classreti_1_1_u_i_element}{reti.\+UIElement}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, x, y, w, h)
+\item 
+\mbox{\hyperlink{classreti_1_1_u_i_element_ab36be4aaf13c3ad796584ece49eb80cd}{update}} (self, dt, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_slider_a89cc8f8bd87f48008fa0c6a0e10b77d0}\label{classreti_1_1_slider_a89cc8f8bd87f48008fa0c6a0e10b77d0} 
+{\bfseries \+\_\+update\+\_\+val\+\_\+from\+\_\+pos} (self, mouse\+\_\+x)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_slider_adda5843c244af6027541b1205a805f12}\label{classreti_1_1_slider_adda5843c244af6027541b1205a805f12} 
+bool {\bfseries \+\_\+min\+\_\+val} = False
+\item 
+\Hypertarget{classreti_1_1_slider_a750d549e90e895cf70ae4eb2a2735349}\label{classreti_1_1_slider_a750d549e90e895cf70ae4eb2a2735349} 
+bool {\bfseries \+\_\+is\+\_\+dragging} = True; self.\+\_\+update\+\_\+val\+\_\+from\+\_\+pos(event.\+pos\mbox{[}0\mbox{]})
+\item 
+\Hypertarget{classreti_1_1_slider_ad408518f0b21e5722615c402c61fe2b1}\label{classreti_1_1_slider_ad408518f0b21e5722615c402c61fe2b1} 
+bool {\bfseries \+\_\+current\+\_\+val} = self.\+\_\+min\+\_\+val + pct \texorpdfstring{$\ast$}{*} (self.\+\_\+max\+\_\+val -\/ self.\+\_\+min\+\_\+val)
+\item 
+\Hypertarget{classreti_1_1_slider_a8c28b914a804268ca884880b3c305ddc}\label{classreti_1_1_slider_a8c28b914a804268ca884880b3c305ddc} 
+{\bfseries \+\_\+font}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classreti_1_1_u_i_element}{reti.\+UIElement}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+rect} = pygame.\+Rect(x, y, w, h)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief UI Slider for adjusting numerical values.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_slider_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_slider_affa8df3223bd339b4836602a6191ec61}\index{reti.Slider@{reti.Slider}!draw@{draw}}
+\index{draw@{draw}!reti.Slider@{reti.Slider}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_slider_affa8df3223bd339b4836602a6191ec61} 
+reti.\+Slider.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Draws the object to the screen.
+@param surface The Pygame surface to render on.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_object_a97d44c421ce3c3a1bd6bace747d0eef9}{reti.\+Game\+Object}}.
+
+\Hypertarget{classreti_1_1_slider_aef3d93ecbb8fe8ce207214ca85aee0f7}\index{reti.Slider@{reti.Slider}!handle\_event@{handle\_event}}
+\index{handle\_event@{handle\_event}!reti.Slider@{reti.Slider}}
+\doxysubsubsection{\texorpdfstring{handle\_event()}{handle\_event()}}
+{\footnotesize\ttfamily \label{classreti_1_1_slider_aef3d93ecbb8fe8ce207214ca85aee0f7} 
+reti.\+Slider.\+handle\+\_\+event (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{event}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Handles dragging logic. \end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

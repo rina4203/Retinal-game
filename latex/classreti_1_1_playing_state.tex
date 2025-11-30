@@ -1,0 +1,133 @@
+\doxysection{reti.\+Playing\+State Class Reference}
+\hypertarget{classreti_1_1_playing_state}{}\label{classreti_1_1_playing_state}\index{reti.PlayingState@{reti.PlayingState}}
+Inheritance diagram for reti.\+Playing\+State\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classreti_1_1_playing_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_playing_state_adbb1d8572b66e30beef7eae8e9567246}\label{classreti_1_1_playing_state_adbb1d8572b66e30beef7eae8e9567246} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\item 
+\mbox{\hyperlink{classreti_1_1_playing_state_a711d0c5d6516109e55726e8581893aad}{reset\+\_\+game}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_playing_state_a02ed86b774b155bb1f4d577fd1210ab8}{handle\+\_\+event}} (self, event)
+\item 
+\mbox{\hyperlink{classreti_1_1_playing_state_af961f055000f7d210541f1963430aef0}{update}} (self, dt)
+\item 
+\mbox{\hyperlink{classreti_1_1_playing_state_a8020eaf7504d72baf548ddd6e80a8d5a}{draw}} (self, surface)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, game)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classreti_1_1_playing_state_a6e305d083276f99d2ccc5aee40196877}{\+\_\+spawn\+\_\+stars}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_playing_state_afc4188b93554ff27142750fb90aee911}{\+\_\+handle\+\_\+collisions}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_playing_state_a891e67f8a1492a5c59ba2340bb147956}\label{classreti_1_1_playing_state_a891e67f8a1492a5c59ba2340bb147956} 
+{\bfseries \+\_\+basket} = \mbox{\hyperlink{classreti_1_1_basket}{Basket}}(game)
+\item 
+\Hypertarget{classreti_1_1_playing_state_ade26e42331fcd70f0697bcdac20aa883}\label{classreti_1_1_playing_state_ade26e42331fcd70f0697bcdac20aa883} 
+{\bfseries \+\_\+star\+\_\+manager} = \mbox{\hyperlink{classreti_1_1_object_manager}{Object\+Manager}}\mbox{[}\mbox{\hyperlink{classreti_1_1_game_object}{Game\+Object}}\mbox{]}()
+\item 
+\Hypertarget{classreti_1_1_playing_state_a8f00eb1bf0004e0bb7181efeb164dba6}\label{classreti_1_1_playing_state_a8f00eb1bf0004e0bb7181efeb164dba6} 
+{\bfseries \+\_\+particle\+\_\+manager} = \mbox{\hyperlink{classreti_1_1_object_manager}{Object\+Manager}}\mbox{[}\mbox{\hyperlink{classreti_1_1_particle}{Particle}}\mbox{]}()
+\item 
+\Hypertarget{classreti_1_1_playing_state_a79996f75a02ba08ecf7f34606c2fdc00}\label{classreti_1_1_playing_state_a79996f75a02ba08ecf7f34606c2fdc00} 
+int {\bfseries \+\_\+score} = 0
+\item 
+\Hypertarget{classreti_1_1_playing_state_a73bc6c015bc4686e52d99da64d4e0755}\label{classreti_1_1_playing_state_a73bc6c015bc4686e52d99da64d4e0755} 
+float {\bfseries \+\_\+speed\+\_\+multiplier} = 0
+\item 
+\Hypertarget{classreti_1_1_playing_state_adc2114005a523b4ee6112786d8dfa510}\label{classreti_1_1_playing_state_adc2114005a523b4ee6112786d8dfa510} 
+{\bfseries \+\_\+current\+\_\+add\+\_\+rate} = self.\+\_\+game.\+get\+\_\+settings()\mbox{[}"{}star\+\_\+rate"{}\mbox{]}
+\item 
+\Hypertarget{classreti_1_1_playing_state_a60a6c235fc93c0958c1d0c5ad95791da}\label{classreti_1_1_playing_state_a60a6c235fc93c0958c1d0c5ad95791da} 
+int {\bfseries \+\_\+star\+\_\+add\+\_\+counter} = 0
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries \+\_\+game} = game
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Standard Arcade Game Mode.
+@details Endless mode with random falling stars.
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_playing_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_playing_state_afc4188b93554ff27142750fb90aee911}\index{reti.PlayingState@{reti.PlayingState}!\_handle\_collisions@{\_handle\_collisions}}
+\index{\_handle\_collisions@{\_handle\_collisions}!reti.PlayingState@{reti.PlayingState}}
+\doxysubsubsection{\texorpdfstring{\_handle\_collisions()}{\_handle\_collisions()}}
+{\footnotesize\ttfamily \label{classreti_1_1_playing_state_afc4188b93554ff27142750fb90aee911} 
+reti.\+Playing\+State.\+\_\+handle\+\_\+collisions (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}@brief Checks collisions between basket and stars. \end{DoxyVerb}
+ \Hypertarget{classreti_1_1_playing_state_a6e305d083276f99d2ccc5aee40196877}\index{reti.PlayingState@{reti.PlayingState}!\_spawn\_stars@{\_spawn\_stars}}
+\index{\_spawn\_stars@{\_spawn\_stars}!reti.PlayingState@{reti.PlayingState}}
+\doxysubsubsection{\texorpdfstring{\_spawn\_stars()}{\_spawn\_stars()}}
+{\footnotesize\ttfamily \label{classreti_1_1_playing_state_a6e305d083276f99d2ccc5aee40196877} 
+reti.\+Playing\+State.\+\_\+spawn\+\_\+stars (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}@brief Spawns stars or currency based on timer. \end{DoxyVerb}
+ \Hypertarget{classreti_1_1_playing_state_a8020eaf7504d72baf548ddd6e80a8d5a}\index{reti.PlayingState@{reti.PlayingState}!draw@{draw}}
+\index{draw@{draw}!reti.PlayingState@{reti.PlayingState}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily \label{classreti_1_1_playing_state_a8020eaf7504d72baf548ddd6e80a8d5a} 
+reti.\+Playing\+State.\+draw (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{surface}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_playing_state_a02ed86b774b155bb1f4d577fd1210ab8}\index{reti.PlayingState@{reti.PlayingState}!handle\_event@{handle\_event}}
+\index{handle\_event@{handle\_event}!reti.PlayingState@{reti.PlayingState}}
+\doxysubsubsection{\texorpdfstring{handle\_event()}{handle\_event()}}
+{\footnotesize\ttfamily \label{classreti_1_1_playing_state_a02ed86b774b155bb1f4d577fd1210ab8} 
+reti.\+Playing\+State.\+handle\+\_\+event (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{event}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Handles Pygame events for this state.
+@param event The Pygame event object.
+\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state_a0fe3e7fa1c372257b429dc900b2e3d6f}{reti.\+Game\+State}}.
+
+\Hypertarget{classreti_1_1_playing_state_a711d0c5d6516109e55726e8581893aad}\index{reti.PlayingState@{reti.PlayingState}!reset\_game@{reset\_game}}
+\index{reset\_game@{reset\_game}!reti.PlayingState@{reti.PlayingState}}
+\doxysubsubsection{\texorpdfstring{reset\_game()}{reset\_game()}}
+{\footnotesize\ttfamily \label{classreti_1_1_playing_state_a711d0c5d6516109e55726e8581893aad} 
+reti.\+Playing\+State.\+reset\+\_\+game (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Resets score and game objects for a new run. \end{DoxyVerb}
+ \Hypertarget{classreti_1_1_playing_state_af961f055000f7d210541f1963430aef0}\index{reti.PlayingState@{reti.PlayingState}!update@{update}}
+\index{update@{update}!reti.PlayingState@{reti.PlayingState}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classreti_1_1_playing_state_af961f055000f7d210541f1963430aef0} 
+reti.\+Playing\+State.\+update (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{dt}{}\end{DoxyParamCaption})}
+
+
+
+Reimplemented from \mbox{\hyperlink{classreti_1_1_game_state}{reti.\+Game\+State}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}

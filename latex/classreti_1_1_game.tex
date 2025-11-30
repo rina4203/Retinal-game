@@ -1,0 +1,227 @@
+\doxysection{reti.\+Game Class Reference}
+\hypertarget{classreti_1_1_game}{}\label{classreti_1_1_game}\index{reti.Game@{reti.Game}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classreti_1_1_game_a031f446ba2c14eea1c5d31968e40628e}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, headless=False)
+\item 
+\Hypertarget{classreti_1_1_game_a119044585bdf8f8e570c414afe174648}\label{classreti_1_1_game_a119044585bdf8f8e570c414afe174648} 
+{\bfseries update\+\_\+high\+\_\+score} (self, score)
+\item 
+\Hypertarget{classreti_1_1_game_ae23857c3c864679df32177ce4be2804c}\label{classreti_1_1_game_ae23857c3c864679df32177ce4be2804c} 
+{\bfseries get\+\_\+high\+\_\+score} (self)
+\item 
+\Hypertarget{classreti_1_1_game_aeece64869d778f3649b87059c095cdf1}\label{classreti_1_1_game_aeece64869d778f3649b87059c095cdf1} 
+{\bfseries get\+\_\+currency} (self)
+\item 
+\Hypertarget{classreti_1_1_game_a866d2a8f410b98cef7dde0827348391e}\label{classreti_1_1_game_a866d2a8f410b98cef7dde0827348391e} 
+{\bfseries add\+\_\+currency} (self, amount)
+\item 
+\Hypertarget{classreti_1_1_game_a0068141f65abeada3f7438414ae1dc88}\label{classreti_1_1_game_a0068141f65abeada3f7438414ae1dc88} 
+{\bfseries has\+\_\+item} (self, category, item\+\_\+id)
+\item 
+\Hypertarget{classreti_1_1_game_a08859b480a81e5e1a1179cb6edc36420}\label{classreti_1_1_game_a08859b480a81e5e1a1179cb6edc36420} 
+{\bfseries buy\+\_\+item} (self, category, item\+\_\+id, price)
+\item 
+\Hypertarget{classreti_1_1_game_a0491f9d9b3b3b94053781bfb271ccbd0}\label{classreti_1_1_game_a0491f9d9b3b3b94053781bfb271ccbd0} 
+{\bfseries equip\+\_\+item} (self, category, item\+\_\+id)
+\item 
+\Hypertarget{classreti_1_1_game_a8fad560cb41c2f84bac1816aedc1a47a}\label{classreti_1_1_game_a8fad560cb41c2f84bac1816aedc1a47a} 
+{\bfseries is\+\_\+equipped} (self, category, item\+\_\+id)
+\item 
+\Hypertarget{classreti_1_1_game_a1ec9508316828dee754db98ca91f1db7}\label{classreti_1_1_game_a1ec9508316828dee754db98ca91f1db7} 
+{\bfseries get\+\_\+equipped} (self, category)
+\item 
+\Hypertarget{classreti_1_1_game_a05e640bdffc7f2ec453f5a93f886045b}\label{classreti_1_1_game_a05e640bdffc7f2ec453f5a93f886045b} 
+{\bfseries play\+\_\+note\+\_\+sound} (self, note\+\_\+name)
+\item 
+\Hypertarget{classreti_1_1_game_a0c6cd7f87f50b23ab9a5b62a0434fbd2}\label{classreti_1_1_game_a0c6cd7f87f50b23ab9a5b62a0434fbd2} 
+{\bfseries play\+\_\+catch\+\_\+sound} (self)
+\item 
+\Hypertarget{classreti_1_1_game_a2893639223f3dfee4ab119b545f49ef2}\label{classreti_1_1_game_a2893639223f3dfee4ab119b545f49ef2} 
+{\bfseries play\+\_\+music} (self, str music\+\_\+path, int fade\+\_\+ms=1000, float volume=0.\+5)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_a9fd1acc5328cb5a2de33a2f9e5c60f2a}{run}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_a81c61fb3aa7958d01034b7583a068b4c}{change\+\_\+state}} (self, \mbox{\hyperlink{classreti_1_1_game_state}{Game\+State}} new\+\_\+state)
+\item 
+\Hypertarget{classreti_1_1_game_ac2132a0190f652a6f3531e89b061c8f5}\label{classreti_1_1_game_ac2132a0190f652a6f3531e89b061c8f5} 
+{\bfseries stop} (self)
+\item 
+\Hypertarget{classreti_1_1_game_af6f92164bf75625a6511ddfd7102be8e}\label{classreti_1_1_game_af6f92164bf75625a6511ddfd7102be8e} 
+dict {\bfseries get\+\_\+settings} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_game_a0c5ec1b347d23ab73c21f12ecc8fbbbe}\label{classreti_1_1_game_a0c5ec1b347d23ab73c21f12ecc8fbbbe} 
+float {\bfseries sfx\+\_\+volume} = 0.\+5
+\item 
+\Hypertarget{classreti_1_1_game_a1bd7d3212e798c26e74faa6f05431854}\label{classreti_1_1_game_a1bd7d3212e798c26e74faa6f05431854} 
+dict {\bfseries data} = \{ "{}high\+\_\+score"{}\+: 0, "{}currency"{}\+: 0, "{}inventory"{}\+: \mbox{[}"{}Default"{}, "{}Star"{}, "{}Default\+\_\+\+Size"{}\mbox{]}, "{}equipped"{}\+: \{"{}color"{}\+: "{}Default"{}, "{}shape"{}\+: "{}Star"{}, "{}size"{}\+: 0\} \}
+\item 
+\Hypertarget{classreti_1_1_game_aff6840e1e4f627de43b39ae947f0b4f3}\label{classreti_1_1_game_aff6840e1e4f627de43b39ae947f0b4f3} 
+dict {\bfseries notes\+\_\+data} = \{\}
+\item 
+\Hypertarget{classreti_1_1_game_a7ac88b96199e604968221e73c6077961}\label{classreti_1_1_game_a7ac88b96199e604968221e73c6077961} 
+dict {\bfseries sound\+\_\+bank} = \{\}
+\item 
+\Hypertarget{classreti_1_1_game_ada0e6af9cbbe9a41b8690206cc69db2c}\label{classreti_1_1_game_ada0e6af9cbbe9a41b8690206cc69db2c} 
+{\bfseries FONT\+\_\+\+BIG} = pygame.\+font.\+Font(target\+\_\+font, s\+\_\+big)
+\item 
+\Hypertarget{classreti_1_1_game_a1261b7d8d7eced903f59640b8bb511f9}\label{classreti_1_1_game_a1261b7d8d7eced903f59640b8bb511f9} 
+{\bfseries FONT\+\_\+\+MEDIUM} = pygame.\+font.\+Font(target\+\_\+font, s\+\_\+med)
+\item 
+\Hypertarget{classreti_1_1_game_a4b8b9a2135c5e3fd053186cdea9d1f7b}\label{classreti_1_1_game_a4b8b9a2135c5e3fd053186cdea9d1f7b} 
+{\bfseries FONT\+\_\+\+SMALL} = pygame.\+font.\+Font(target\+\_\+font, s\+\_\+small)
+\item 
+\Hypertarget{classreti_1_1_game_add2cb3b0e7e5be8303dc87dcc2c6469c}\label{classreti_1_1_game_add2cb3b0e7e5be8303dc87dcc2c6469c} 
+{\bfseries FONT\+\_\+\+TINY} = pygame.\+font.\+Font(target\+\_\+font, s\+\_\+tiny)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classreti_1_1_game_a2d04fd534dfd898ea96b1b514d661f1f}{\+\_\+load\+\_\+data}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_a0792532a00f2770e02d5ca64290e80c5}{\+\_\+load\+\_\+notes}} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_a01a4fd2990126fafb9d16a0988fc9704}{\+\_\+save\+\_\+data}} (self)
+\item 
+\Hypertarget{classreti_1_1_game_adfbd6ad3e3a3737285cea047dd61f5db}\label{classreti_1_1_game_adfbd6ad3e3a3737285cea047dd61f5db} 
+{\bfseries \+\_\+load\+\_\+fonts} (self)
+\item 
+\Hypertarget{classreti_1_1_game_a130a1137c767295e06051718b8d61887}\label{classreti_1_1_game_a130a1137c767295e06051718b8d61887} 
+{\bfseries \+\_\+create\+\_\+background} (self)
+\item 
+\Hypertarget{classreti_1_1_game_aca75e954437dc1878ac0b7bece203274}\label{classreti_1_1_game_aca75e954437dc1878ac0b7bece203274} 
+{\bfseries \+\_\+load\+\_\+audio} (self)
+\item 
+\mbox{\hyperlink{classreti_1_1_game_a7c1b0fd0b0c38b1bf76f5ed3ff8a08a9}{\+\_\+load\+\_\+all\+\_\+note\+\_\+sounds}} (self)
+\item 
+\Hypertarget{classreti_1_1_game_a46bca3ba9dafc8baba09d1f9d695cbee}\label{classreti_1_1_game_a46bca3ba9dafc8baba09d1f9d695cbee} 
+{\bfseries \+\_\+handle\+\_\+events} (self)
+\item 
+\Hypertarget{classreti_1_1_game_ad264f7bf1e009313847cf5194d91ca9d}\label{classreti_1_1_game_ad264f7bf1e009313847cf5194d91ca9d} 
+{\bfseries \+\_\+update} (self, dt, theme\+\_\+switched=False)
+\item 
+\Hypertarget{classreti_1_1_game_a638c962cdcbc1ee7c68c8864188ea76f}\label{classreti_1_1_game_a638c962cdcbc1ee7c68c8864188ea76f} 
+{\bfseries \+\_\+draw} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classreti_1_1_game_a023b34d19321ebb88d4a54499bb69fe6}\label{classreti_1_1_game_a023b34d19321ebb88d4a54499bb69fe6} 
+{\bfseries \+\_\+window} = pygame.\+Surface((WIDTH, HEIGHT))
+\item 
+\Hypertarget{classreti_1_1_game_afe594dbd86eee0462cc967611b46c9af}\label{classreti_1_1_game_afe594dbd86eee0462cc967611b46c9af} 
+{\bfseries \+\_\+clock} = pygame.\+time.\+Clock()
+\item 
+\Hypertarget{classreti_1_1_game_a4c9d8f50f34625d1fd83cb3374cfc2ef}\label{classreti_1_1_game_a4c9d8f50f34625d1fd83cb3374cfc2ef} 
+bool {\bfseries \+\_\+running} = True
+\item 
+\Hypertarget{classreti_1_1_game_aa25f683277e92b5f691ecd56e3fc2cb9}\label{classreti_1_1_game_aa25f683277e92b5f691ecd56e3fc2cb9} 
+dict {\bfseries \+\_\+settings} = \{"{}star\+\_\+rate"{}\+: 100, "{}star\+\_\+rate\+\_\+name"{}\+: "{}Normal"{}\}
+\item 
+\Hypertarget{classreti_1_1_game_ada23f24c4a18a2ab354f351cca7fe3fa}\label{classreti_1_1_game_ada23f24c4a18a2ab354f351cca7fe3fa} 
+{\bfseries \+\_\+menu\+\_\+music\+\_\+path} = os.\+path.\+join(SOUND\+\_\+\+FOLDER, "{}menu\+\_\+sound.\+mp3"{})
+\item 
+\Hypertarget{classreti_1_1_game_a0ec516693d3985957934cfef629af265}\label{classreti_1_1_game_a0ec516693d3985957934cfef629af265} 
+{\bfseries \+\_\+game\+\_\+music\+\_\+path} = os.\+path.\+join(SOUND\+\_\+\+FOLDER, "{}game\+\_\+sound.\+mp3"{})
+\item 
+\Hypertarget{classreti_1_1_game_a5e84b019cf18664b9c8b9695000a9c2b}\label{classreti_1_1_game_a5e84b019cf18664b9c8b9695000a9c2b} 
+dict {\bfseries \+\_\+sound\+\_\+effect\+\_\+paths} = \{"{}hight"{}\+: os.\+path.\+join(SOUND\+\_\+\+FOLDER, "{}hight.\+mp3"{})\}
+\item 
+\Hypertarget{classreti_1_1_game_a13f7562ea24bb8c30bd588ad4100e2aa}\label{classreti_1_1_game_a13f7562ea24bb8c30bd588ad4100e2aa} 
+Optional\mbox{[}str\mbox{]} {\bfseries \+\_\+current\+\_\+music\+\_\+path} = None
+\item 
+\Hypertarget{classreti_1_1_game_ab25f31eeaa7c50677fd7ef9c98bc5d19}\label{classreti_1_1_game_ab25f31eeaa7c50677fd7ef9c98bc5d19} 
+Optional\mbox{[}pygame.\+mixer.\+Sound\mbox{]} {\bfseries \+\_\+catch\+\_\+sound} = None
+\item 
+\Hypertarget{classreti_1_1_game_af53d26c4211a1eb190fc921221be8b0c}\label{classreti_1_1_game_af53d26c4211a1eb190fc921221be8b0c} 
+Optional\mbox{[}pygame.\+mixer.\+Channel\mbox{]} {\bfseries \+\_\+sound\+\_\+channel\+\_\+star} = None
+\item 
+\Hypertarget{classreti_1_1_game_aebb8b0e2a117bd86d04401a1febe7f64}\label{classreti_1_1_game_aebb8b0e2a117bd86d04401a1febe7f64} 
+\mbox{\hyperlink{classreti_1_1_game_state}{Game\+State}} {\bfseries \+\_\+current\+\_\+state} = \mbox{\hyperlink{classreti_1_1_menu_state}{Menu\+State}}(self)
+\item 
+\Hypertarget{classreti_1_1_game_a8ca37ddd858599fb42fac9611960e8d6}\label{classreti_1_1_game_a8ca37ddd858599fb42fac9611960e8d6} 
+{\bfseries \+\_\+waves\+\_\+manager} = \mbox{\hyperlink{classreti_1_1_object_manager}{Object\+Manager}}\mbox{[}\mbox{\hyperlink{classreti_1_1_procedural_wave}{Procedural\+Wave}}\mbox{]}()
+\item 
+\Hypertarget{classreti_1_1_game_aa9343a05a039590d12134f9b05af5dbb}\label{classreti_1_1_game_aa9343a05a039590d12134f9b05af5dbb} 
+list {\bfseries \+\_\+bg\+\_\+stars} = \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}@brief Main Game Controller.
+@details Handles initialization, asset loading, main loop, and global data storage.
+\end{DoxyVerb}
+ 
+
+\label{doc-constructors}
+\Hypertarget{classreti_1_1_game_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classreti_1_1_game_a031f446ba2c14eea1c5d31968e40628e}\index{reti.Game@{reti.Game}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!reti.Game@{reti.Game}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_a031f446ba2c14eea1c5d31968e40628e} 
+reti.\+Game.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{headless}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Initializes Pygame, Mixer, Window, and Game Data.
+@param headless If True, suppresses window creation (useful for testing).
+\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{classreti_1_1_game_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classreti_1_1_game_a7c1b0fd0b0c38b1bf76f5ed3ff8a08a9}\index{reti.Game@{reti.Game}!\_load\_all\_note\_sounds@{\_load\_all\_note\_sounds}}
+\index{\_load\_all\_note\_sounds@{\_load\_all\_note\_sounds}!reti.Game@{reti.Game}}
+\doxysubsubsection{\texorpdfstring{\_load\_all\_note\_sounds()}{\_load\_all\_note\_sounds()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_a7c1b0fd0b0c38b1bf76f5ed3ff8a08a9} 
+reti.\+Game.\+\_\+load\+\_\+all\+\_\+note\+\_\+sounds (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}@brief Preloads all note sounds from the sound directory.
+@details Handles converting filenames like 'f-4' to 'f#4'.
+\end{DoxyVerb}
+ \Hypertarget{classreti_1_1_game_a2d04fd534dfd898ea96b1b514d661f1f}\index{reti.Game@{reti.Game}!\_load\_data@{\_load\_data}}
+\index{\_load\_data@{\_load\_data}!reti.Game@{reti.Game}}
+\doxysubsubsection{\texorpdfstring{\_load\_data()}{\_load\_data()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_a2d04fd534dfd898ea96b1b514d661f1f} 
+reti.\+Game.\+\_\+load\+\_\+data (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}@brief Loads persistent user data (JSON) with error handling. \end{DoxyVerb}
+ \Hypertarget{classreti_1_1_game_a0792532a00f2770e02d5ca64290e80c5}\index{reti.Game@{reti.Game}!\_load\_notes@{\_load\_notes}}
+\index{\_load\_notes@{\_load\_notes}!reti.Game@{reti.Game}}
+\doxysubsubsection{\texorpdfstring{\_load\_notes()}{\_load\_notes()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_a0792532a00f2770e02d5ca64290e80c5} 
+reti.\+Game.\+\_\+load\+\_\+notes (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}@brief Loads beatmap data (JSON) with error handling. \end{DoxyVerb}
+ \Hypertarget{classreti_1_1_game_a01a4fd2990126fafb9d16a0988fc9704}\index{reti.Game@{reti.Game}!\_save\_data@{\_save\_data}}
+\index{\_save\_data@{\_save\_data}!reti.Game@{reti.Game}}
+\doxysubsubsection{\texorpdfstring{\_save\_data()}{\_save\_data()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_a01a4fd2990126fafb9d16a0988fc9704} 
+reti.\+Game.\+\_\+save\+\_\+data (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}@brief Saves persistent user data (JSON). \end{DoxyVerb}
+ \Hypertarget{classreti_1_1_game_a81c61fb3aa7958d01034b7583a068b4c}\index{reti.Game@{reti.Game}!change\_state@{change\_state}}
+\index{change\_state@{change\_state}!reti.Game@{reti.Game}}
+\doxysubsubsection{\texorpdfstring{change\_state()}{change\_state()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_a81c61fb3aa7958d01034b7583a068b4c} 
+reti.\+Game.\+change\+\_\+state (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{\mbox{\hyperlink{classreti_1_1_game_state}{Game\+State}}}]{new\+\_\+state}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Switches the current game state.
+@param new_state The new GameState instance to switch to.
+\end{DoxyVerb}
+ \Hypertarget{classreti_1_1_game_a9fd1acc5328cb5a2de33a2f9e5c60f2a}\index{reti.Game@{reti.Game}!run@{run}}
+\index{run@{run}!reti.Game@{reti.Game}}
+\doxysubsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily \label{classreti_1_1_game_a9fd1acc5328cb5a2de33a2f9e5c60f2a} 
+reti.\+Game.\+run (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}@brief Main Game Loop. \end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+reti.\+py\end{DoxyCompactItemize}
