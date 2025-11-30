@@ -4,7 +4,7 @@
 
 ## Live documentation 
 
-[Here](https://rina4203.github.io/Retinal-game/html/index.html)
+[Here](https://rina4203.github.io/Retinal-game/html/namespacereti.html))
 ---
 
 ## 📖 About the Game
