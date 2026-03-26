@@ -205,3 +205,22 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Logs and temporary files
+*.log
+game_log.log
+
+# Game saves and local data
+saves/
+save_data.json
+__pycache__/
+*.py[cod]
+
+# IDE settings
+.vscode/
+.idea/
