@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['white_0',['WHITE',['../namespacereti.html#a297267787bacdb5214624a094a479036',1,'reti']]],
-  ['width_1',['WIDTH',['../namespacereti.html#a993488ada9162ef331fb124ecdad5bd0',1,'reti']]]
+  ['white_0',['WHITE',['../namespaceconfig.html#a6fddfd95cfd5bc06b17ff7963308d1a0',1,'config']]],
+  ['width_1',['WIDTH',['../namespaceconfig.html#abbcb72a7ec865fcd1d9d3a65406153e9',1,'config']]]
 ];

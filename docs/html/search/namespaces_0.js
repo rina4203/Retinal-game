@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['note_5feditor_0',['note_editor',['../namespacenote__editor.html',1,'']]]
+  ['config_0',['config',['../namespaceconfig.html',1,'']]]
 ];

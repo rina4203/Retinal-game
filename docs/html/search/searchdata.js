@@ -2,8 +2,8 @@ var indexSectionsWithContent =
 {
   0: "_abcdefghilmnoprstuw",
   1: "bcglmoprstu",
-  2: "nru",
-  3: "nru",
+  2: "cemnsu",
+  3: "cemnsu",
   4: "_abcdeghimprstu",
   5: "_abcdfghilmnprstw"
 };
