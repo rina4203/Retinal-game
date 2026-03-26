@@ -224,3 +224,8 @@ __pycache__/
 # IDE settings
 .vscode/
 .idea/
+
+.venv/
+__pycache__/
+*.pyc
+game_log.log
