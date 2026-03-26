@@ -1,0 +1,45 @@
+@startuml
+title Retinal Game - Advanced State Machine
+
+[*] --> Initialization
+Initialization : Load assets
+Initialization : Load save_data.json
+Initialization --> MenuState
+
+state MenuState {
+    [*] --> MainMenu
+    MainMenu --> ShopState : OnShopClick
+    MainMenu --> SettingsState : OnSettingsClick
+    MainMenu --> RhythmSelect : OnRhythmClick
+}
+
+state PlayingState {
+    state "ArcadeMode" as AM
+    state "RhythmMode" as RM
+    
+    [*] --> AM : Start Normal
+    [*] --> RM : Select Song
+    
+    AM --> PausedState : KeyDown(SPACE)
+    RM --> PausedState : KeyDown(SPACE)
+    
+    PausedState --> AM : Resume
+    PausedState --> RM : Resume
+}
+
+PlayingState --> GameOverState : [missed_stars > limit]
+GameOverState --> PlayingState : Action: ResetScore()
+GameOverState --> MenuState : Action: SaveHighScore()
+
+ShopState --> MenuState : Back
+SettingsState --> MenuState : Action: ApplySettings()
+
+state Exit <<end>>
+MenuState --> Exit : Close Window
+
+note right of PlayingState
+  All states implement 
+  Interface: GameState
+end note
+
+@enduml

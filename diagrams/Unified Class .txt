@@ -1,0 +1,129 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam nodesep 100
+skinparam ranksep 100
+
+title Retinal Game - Detailed Modular Architecture (Class Diagram)
+
+package "config.py" #f8f9fa {
+    class GlobalConfig << (C, #ADD1B2) >> {
+        + SCREEN_WIDTH: int = 800
+        + SCREEN_HEIGHT: int = 600
+        + FPS: int = 60
+        + COLORS: dict
+        + ASSET_PATHS: dict
+    }
+}
+
+package "engine.py" #e3f2fd {
+    abstract class GameObject {
+        # _x: float
+        # _y: float
+        + rect: pygame.Rect
+        + {abstract} update(dt: float)
+        + {abstract} draw(surface: pygame.Surface)
+    }
+
+    interface GameState {
+        + {abstract} handle_event(event: pygame.event.Event)
+        + {abstract} update(dt: float)
+        + {abstract} draw(surface: pygame.Surface)
+    }
+
+    class LocalizationManager <<Singleton>> {
+        - _data: dict
+        + current_lang: str = "EN"
+        + get(key: str): str
+        + toggle_lang()
+    }
+
+    class ThemeManager <<Singleton>> {
+        + current_theme: str = "dark"
+        - _transition_progress: float
+        + get_property(name: str): Any
+        + start_transition(target: str)
+    }
+
+    class ObjectManager {
+        - _objects: list[GameObject]
+        + add(obj: GameObject)
+        + remove(obj: GameObject)
+        + update_all(dt: float)
+        + draw_all(surface: pygame.Surface)
+        + clear()
+    }
+}
+
+package "entities.py" #fff3e0 {
+    class Basket {
+        - _speed: float
+        + update(dt, keys)
+        + get_rect(): Rect
+    }
+    class Star {
+        - _velocity: float
+        - _color: tuple
+        + get_points(): int
+        + is_off_screen(): bool
+    }
+    class Currency {
+        - _value: int
+        + update(dt)
+    }
+    class Particle {
+        - _lifetime: float
+        - _color: tuple
+    }
+
+    GameObject <|-- Basket
+    GameObject <|-- Star
+    GameObject <|-- Currency
+    GameObject <|-- Particle
+}
+
+package "states.py" #f1f8e9 {
+    class MenuState {
+        - _buttons: list[Button]
+        + handle_event(event)
+    }
+    class PlayingState {
+        - _score: int
+        - _combo: int
+        - _manager: ObjectManager
+        - _spawn_timer: float
+        + _handle_collisions()
+        + reset_game()
+    }
+    class ShopState {
+        - _inventory: list
+        + buy_item(item_id)
+    }
+    
+    GameState <|-- MenuState
+    GameState <|-- PlayingState
+    GameState <|-- ShopState
+}
+
+package "main.py" #fce4ec {
+    class Game {
+        - _screen: Surface
+        - _clock: Clock
+        - _current_state: GameState
+        - _save_data: dict
+        + run()
+        + change_state(new_state: GameState)
+        + load_save_data()
+        + save_game()
+    }
+}
+
+' Deep Dependencies
+Game *-- GameState : "Composition (manages lifecycle)"
+Game o-- ThemeManager : "Uses"
+Game o-- LocalizationManager : "Uses"
+PlayingState *-- ObjectManager : "Aggregation (manages objects)"
+ObjectManager o-- GameObject : "Contains list of"
+entities.py ..> config.py : "Uses constants"
+
+@enduml

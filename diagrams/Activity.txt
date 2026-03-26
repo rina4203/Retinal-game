@@ -1,0 +1,38 @@
+@startuml
+left to right direction
+skinparam packageStyle rect
+title Retinal Game - Comprehensive Use Case Diagram
+
+actor "Player" as P
+actor "File System" as FS <<System>>
+
+rectangle "Retinal Game Application" {
+    package "Core Gameplay" {
+        usecase "Play Arcade (Endless)" as UC_Arcade
+        usecase "Play Rhythm Track" as UC_Rhythm
+        usecase "Catch Falling Objects" as UC_Catch
+    }
+    
+    package "Meta & Progression" {
+        usecase "Earn In-game Currency" as UC_Earn
+        usecase "Purchase Paddle Skins" as UC_Shop
+        usecase "Equip New Shapes/Colors" as UC_Equip
+    }
+    
+    package "System & UI" {
+        usecase "Change Language (UA/EN)" as UC_Lang
+        usecase "Toggle Visual Themes" as UC_Theme
+    }
+}
+
+P --> UC_Arcade
+P --> UC_Rhythm
+P --> UC_Shop
+P --> UC_Lang
+P --> UC_Theme
+
+UC_Arcade ..> UC_Catch : <<include>>
+UC_Rhythm ..> UC_Catch : <<include>>
+UC_Catch ..> UC_Earn : <<include>>
+UC_Shop ..> FS : "Updates save_data.json"
+@enduml

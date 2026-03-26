@@ -1,0 +1,34 @@
+@startuml
+title Retinal Game - Hardware & Software Deployment
+
+node "User Workstation" <<PC/Laptop>> {
+    node "Operating System" <<Windows/Linux>> {
+        node "Python Interpreter 3.10+" {
+            artifact "Retinal Source Code (.py)" as Source <<Component>>
+            artifact "Pygame-CE Library" as Pygame <<Library>>
+        }
+        
+        node "Hardware Drivers" {
+            [OpenGL/DirectX] as Video
+            [SDL2 Mixer] as Audio
+        }
+    }
+    
+    node "Local Storage" {
+        file "save_data.json" as JSON
+        file "game_log.log" as Log
+        folder "Assets/" {
+            [Sounds]
+            [Graphics]
+            [Fonts]
+        }
+    }
+}
+
+Source ..> Pygame : "imports"
+Pygame ..> Video : "renders via"
+Pygame ..> Audio : "outputs to"
+Source -- JSON : "Read/Write"
+Source -- Log : "Append"
+Source -- Assets : "Load on Startup"
+@enduml

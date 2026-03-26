@@ -1,0 +1,45 @@
+@startuml
+title Retinal Game - Frame Processing Sequence (Update & Collision)
+
+actor Player
+participant "Game (main.py)" as G
+participant "PlayingState (states.py)" as PS
+participant "ObjectManager (engine.py)" as OM
+participant "Star (entities.py)" as S
+participant "Basket (entities.py)" as B
+
+G -> PS : update(dt)
+activate PS
+
+PS -> OM : update_all(dt)
+activate OM
+OM -> S : update(dt)
+OM -> S : check_bounds()
+deactivate OM
+
+Player -> B : Input (Left/Right)
+B -> B : update_position()
+
+PS -> PS : _handle_collisions()
+activate PS
+PS -> S : get_rect()
+PS -> B : get_rect()
+
+alt Collision detected
+    PS -> G : add_currency(10)
+    PS -> G : update_score(100)
+    PS -> OM : remove(star)
+    PS -> G : play_sound("catch.wav")
+else Star missed
+    PS -> PS : lives - 1
+    PS -> OM : remove(star)
+end
+deactivate PS
+
+PS -> OM : draw_all(surface)
+OM -> S : draw()
+OM -> B : draw()
+deactivate PS
+
+G -> G : pygame.display.flip()
+@enduml

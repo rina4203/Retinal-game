@@ -1,0 +1,36 @@
+@startuml
+title Retinal Game - Modular Component Interaction
+
+package "Game Application" {
+    [Main Controller] <<main.py>> as Main
+    [Game Engine] <<engine.py>> as Engine
+    [Entity Logic] <<entities.py>> as Entities
+    [State Manager] <<states.py>> as States
+    [Config] <<config.py>> as Config
+}
+
+interface "Game State API" as IState
+interface "Entity API" as IEntity
+interface "Resource API" as IRes
+
+Main --( IState : "controls"
+States - IState
+
+States --( IEntity : "manages"
+Entities - IEntity
+
+Entities --( IRes : "fetches constants"
+States --( IRes
+Config - IRes
+
+note top of Engine
+  Contains Singleton Managers:
+  Theme & Localization
+end note
+
+component "Storage Service" {
+    [JSON Parser]
+}
+
+Main ..> [JSON Parser] : "uses for persistence"
+@enduml
