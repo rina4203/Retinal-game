@@ -1,0 +1,46 @@
+name: Deploy Doxygen Docs
+
+on:
+  push:
+    branches:
+      - main    # Або 'master', якщо ваша головна гілка називається так
+
+# Налаштування прав доступу для GITHUB_TOKEN
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Дозволяємо лише один деплой одночасно
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Встановлюємо Doxygen та Graphviz (для графіків)
+      - name: Install Doxygen and Graphviz
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      # Генеруємо документацію (створюється папка docs/html згідно з вашим Doxyfile)
+      - name: Generate Documentation
+        run: doxygen Doxyfile
+
+      # Завантажуємо згенеровані файли як артефакт
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'docs/html'  # Шлях, куди Doxyfile генерує HTML
+
+      # Деплоїмо на GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
