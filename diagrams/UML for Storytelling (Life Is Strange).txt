@@ -1,0 +1,37 @@
+@startuml
+title Life Is Strange: Before the Storm - Chloe's Backtalk Logic
+
+[*] --> Neutral : Start Conversation
+
+state Neutral {
+  Neutral --> Tension : Chloe uses a "Trigger Word"
+  Neutral --> Failure : Chloe stays silent
+}
+
+state Tension {
+  Tension --> Winning : Correct Insult chosen
+  Tension --> Losing : Irrelevant argument chosen
+}
+
+state Winning {
+  Winning --> Success : 3 Points reached
+  Winning --> Tension : Next round of insults
+}
+
+state Losing {
+  Losing --> Failure : 3 Strikes reached
+  Losing --> Tension : Next round of insults
+}
+
+Success : Chloe gets what she wants (e.g. entry to the club)
+Failure : Chloe is kicked out or ignored
+
+Success --> [*]
+Failure --> [*]
+
+note right of Tension
+  Each transition depends on 
+  the player's choice of 
+  metaphors and puns.
+end note
+@enduml
