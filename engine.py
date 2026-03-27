@@ -214,6 +214,8 @@ class ConfirmationModal:
         self._btn_yes = Button(100, 420, 100, 50, "YES", "normal", game.FONT_SMALL) 
         self._btn_no = Button(300, 420, 100, 50, "NO", "normal", game.FONT_SMALL)
     def handle_event(self, event):
+        mouse_pos = pygame.mouse.get_pos()
+        self._btn_yes.update(0, mouse_pos=mouse_pos); self._btn_no.update(0, mouse_pos=mouse_pos)
         if self._btn_yes.check_click(event): return True
         elif self._btn_no.check_click(event): return False
         return None

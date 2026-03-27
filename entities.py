@@ -80,8 +80,10 @@ class Basket(GameObject):
         width, _ = self._get_current_properties(); keys = kwargs.get("keys"); speed_multiplier = kwargs.get("speed_multiplier", 1.0)
         if not keys: return
         self._vel = min(MAX_PLATFORM_SPEED, self._base_vel + (speed_multiplier - 1.0) * 3.0)
-        if keys[pygame.K_LEFT] and self._x > 0: self._x -= self._vel
-        if keys[pygame.K_RIGHT] and self._x < WIDTH - width: self._x += self._vel
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]: 
+            if self._x > 0: self._x -= self._vel
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]: 
+            if self._x < WIDTH - width: self._x += self._vel
 
     def get_vel(self) -> float: return self._vel
     def get_rect(self) -> pygame.Rect:
@@ -170,3 +172,64 @@ class Star(GameObject):
                 pygame.draw.circle(s, (*halo_color, int(halo_alpha_base * (0.7 + p * 0.3))), (int(current_size*2), int(current_size*2)), int(current_size*1.6))
                 pygame.draw.circle(s, (*base_color, 255), (int(current_size*2), int(current_size*2)), int(current_size))
                 surface.blit(s, (self._x - current_size*2, self._y - current_size*2))
+
+# =============================================================================
+# DECORATOR PATTERN (Structural)
+# Wraps a Star object and adds a golden glow visual effect + bonus points.
+# Conforms to the same GameObject interface so callers treat it identically.
+# =============================================================================
+class GoldenGlow(GameObject):
+    """
+    @class GoldenGlow
+    @brief Decorator that wraps a Star and adds a golden glow effect.
+    @details Implements the Decorator (Wrapper) structural pattern.
+             Adds visual golden aura and multiplies point value without
+             modifying the original Star class.
+    """
+
+    GLOW_COLOR = (255, 215, 0)    # gold
+    GLOW_ALPHA = 80
+    POINT_MULTIPLIER = 3
+
+    def __init__(self, wrapped: Star):
+        """
+        @param wrapped  The Star instance to decorate.
+        """
+        self._wrapped = wrapped
+        self._pulse_timer = 0.0
+
+    # --- Forward all Star-specific getters to the wrapped object ---
+    def get_y(self) -> float:           return self._wrapped.get_y()
+    def get_points(self) -> int:        return self._wrapped.get_points() * self.POINT_MULTIPLIER
+    def get_pos(self) -> tuple:         return self._wrapped.get_pos()
+    def get_rect(self) -> pygame.Rect:  return self._wrapped.get_rect()
+    def get_color(self):                return self.GLOW_COLOR
+    def get_note_name(self):            return self._wrapped.get_note_name()
+    def get_size_category(self) -> str: return self._wrapped.get_size_category()
+    def set_y(self, y):                 self._wrapped.set_y(y)
+
+    def update(self, dt, **kwargs):
+        self._wrapped.update(dt, **kwargs)
+        self._pulse_timer += dt * 4.0   # pulse speed
+
+    def draw(self, surface):
+        # 1. Draw the base star first
+        self._wrapped.draw(surface)
+
+        # 2. Draw golden halo on top
+        x, y = self._wrapped.get_pos()
+        rect = self._wrapped.get_rect()
+        radius = max(rect.width, rect.height) // 2
+
+        pulse = math.sin(self._pulse_timer) * 0.3 + 1.0   # oscillates 0.7 – 1.3
+        glow_radius = int(radius * 2.0 * pulse)
+
+        if glow_radius > 0:
+            glow_surf = pygame.Surface((glow_radius * 2, glow_radius * 2), pygame.SRCALPHA)
+            pygame.draw.circle(
+                glow_surf,
+                (*self.GLOW_COLOR, self.GLOW_ALPHA),
+                (glow_radius, glow_radius),
+                glow_radius
+            )
+            surface.blit(glow_surf, (x - glow_radius, y - glow_radius))

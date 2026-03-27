@@ -8,6 +8,7 @@ import random
 from config import *
 from engine import loc, theme_mgr, ObjectManager, measure_time
 from entities import ProceduralWave
+from events import audio, session_caretaker
 from states import MenuState, GameState, PlayingState, RhythmSelectionState, ShopState, SettingsState, GameOverState
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler("game_log.log"), logging.StreamHandler()])
@@ -26,7 +27,6 @@ class Game:
         self.notes_data = {}; self.sound_bank = {}
 
         self._load_data(); self._load_notes()
-        if self.data["currency"] < 10000: self.data["currency"] = 1000000; self._save_data()
 
         self._load_fonts(); self._create_background()
         self._menu_music_path = os.path.join(SOUND_FOLDER, "menu_sound.mp3")
@@ -89,7 +89,9 @@ class Game:
 
     def _create_background(self):
         self._waves_manager = ObjectManager[ProceduralWave]()
-        for i in range(len(theme_mgr.themes["light"]["bg_elements"])): self._waves_manager.add(ProceduralWave(i))
+        dark_count = len(theme_mgr.themes["dark"]["bg_elements"])
+        light_count = len(theme_mgr.themes["light"]["bg_elements"])
+        for i in range(max(dark_count, light_count)): self._waves_manager.add(ProceduralWave(i))
         self._bg_stars = [{'pos': (random.randint(0, WIDTH), random.randint(0, HEIGHT)), 'radius': random.randint(1, 2)} for _ in range(NUM_BG_STARS)]
 
     def _load_audio(self):
@@ -120,13 +122,12 @@ class Game:
         if self._sound_channel_star and self._catch_sound: self._catch_sound.set_volume(self.sfx_volume); self._sound_channel_star.play(self._catch_sound)
 
     def play_music(self, music_path: str, fade_ms: int = 1000, volume: float = 0.5):
+        # FACADE PATTERN — delegates to AudioFacade instead of calling pygame.mixer directly
         if not os.path.exists(music_path): self._current_music_path = None; return
-        if music_path == self._current_music_path and pygame.mixer.music.get_busy(): pygame.mixer.music.set_volume(volume); return
-        if pygame.mixer.music.get_busy(): pygame.mixer.music.fadeout(fade_ms)
-        try:
-            pygame.mixer.music.load(music_path); pygame.mixer.music.set_volume(volume); pygame.mixer.music.play(-1, fade_ms=fade_ms)
-            self._current_music_path = music_path
-        except: self._current_music_path = None
+        if music_path == self._current_music_path and pygame.mixer.music.get_busy():
+            audio.set_music_volume(volume); return
+        audio.play_music(music_path, volume=volume)
+        self._current_music_path = music_path
 
     def run(self):
         while self._running:
@@ -148,8 +149,13 @@ class Game:
 
     def change_state(self, new_state: GameState):
         self._current_state = new_state
-        if isinstance(new_state, (MenuState, SettingsState, GameOverState, RhythmSelectionState, ShopState)): self.play_music(self._menu_music_path, volume=pygame.mixer.music.get_volume())
-        elif isinstance(new_state, PlayingState): self.play_music(self._game_music_path, volume=0.3)
+        # MEMENTO — clear saved session when returning to menu or game over
+        if isinstance(new_state, (MenuState, GameOverState)):
+            session_caretaker.clear()
+        if isinstance(new_state, (MenuState, SettingsState, GameOverState, RhythmSelectionState, ShopState)):
+            self.play_music(self._menu_music_path, volume=audio._music_volume)
+        elif isinstance(new_state, PlayingState):
+            self.play_music(self._game_music_path, volume=0.3)
 
     def stop(self): self._running = False
     def get_settings(self) -> dict: return self._settings

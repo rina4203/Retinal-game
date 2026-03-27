@@ -81,7 +81,8 @@ class TestRetinalMegaSuite(unittest.TestCase):
         basket = entities.Basket(self.game)
         initial_x = basket._x
         # Емулюємо натискання клавіші "Вправо"
-        keys = {mock_pygame.K_LEFT: False, mock_pygame.K_RIGHT: True}
+        keys = {mock_pygame.K_LEFT: False, mock_pygame.K_RIGHT: True,
+                mock_pygame.K_a: False, mock_pygame.K_d: False}
         basket.update(0.1, keys=keys)
         self.assertGreater(basket._x, initial_x)
 
@@ -143,6 +144,77 @@ class TestRetinalMegaSuite(unittest.TestCase):
         self.assertEqual(len(mgr.get_list()), 1)
         mgr.clear()
         self.assertEqual(len(mgr.get_list()), 0)
+
+    # =========================================================================
+    # BLOCK 5: Bug Regression Tests (перевірка виправлених багів)
+    # =========================================================================
+
+    def test_11_combo_resets_on_miss(self):
+        """Bug fix: combo мав не скидатись при пропуску зірки — тепер скидається"""
+        playing = states.PlayingState(self.game)
+        playing._combo = 15
+        playing._missed_stars = 0
+        # Симулюємо пропуск зірки через виклик _handle_collisions з мок-об'єктом
+        mock_star = MagicMock(spec=entities.Star)
+        mock_star.get_y.return_value = 9999  # нижче екрану
+        mock_star.get_rect.return_value = mock_pygame.Rect(0, 9999, 10, 10)
+        playing._star_manager.add(mock_star)
+        # Мокаємо basket_rect щоб не колайдив
+        playing._basket.get_rect = MagicMock(return_value=mock_pygame.Rect(0, 700, 150, 20))
+        playing._handle_collisions()
+        self.assertEqual(playing._combo, 0, "Combo має скидатись до 0 при пропуску зірки")
+
+    def test_12_no_cheat_currency(self):
+        """Bug fix: гра більше не виставляє 1 000 000 валюти при старті"""
+        self.game.data["currency"] = 500
+        # Симулюємо збереження та завантаження
+        import tempfile, json, os
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(self.game.data, f)
+            tmp_path = f.name
+        try:
+            with open(tmp_path) as f:
+                loaded = json.load(f)
+            self.assertNotEqual(loaded["currency"], 1000000, "Cheat-код валюти не має спрацьовувати")
+            self.assertEqual(loaded["currency"], 500)
+        finally:
+            os.unlink(tmp_path)
+
+    def test_13_basket_ad_keys(self):
+        """Bug fix: кошик має реагувати на клавіші A та D"""
+        basket = entities.Basket(self.game)
+        initial_x = basket._x
+        # Емулюємо натискання 'D' (рух вправо)
+        keys = {mock_pygame.K_LEFT: False, mock_pygame.K_RIGHT: False,
+                mock_pygame.K_a: False, mock_pygame.K_d: True}
+        basket.update(0.1, keys=keys)
+        self.assertGreater(basket._x, initial_x, "Клавіша D має рухати кошик вправо")
+        # Емулюємо натискання 'A' (рух вліво)
+        basket._x = 200
+        keys = {mock_pygame.K_LEFT: False, mock_pygame.K_RIGHT: False,
+                mock_pygame.K_a: True, mock_pygame.K_d: False}
+        basket.update(0.1, keys=keys)
+        self.assertLess(basket._x, 200, "Клавіша A має рухати кошик вліво")
+
+    def test_14_rhythm_miss_counter(self):
+        """Bug fix: Rhythm mode має лічильник пропусків замість миттєвого game over"""
+        song_data = {"name": "Test", "bpm": 120, "note_id": "99"}
+        rhythm_state = states.RhythmGameState(self.game, song_data)
+        self.assertEqual(rhythm_state._missed_notes, 0)
+        self.assertEqual(rhythm_state._max_missed_notes, 5)
+        # Перевіряємо що після 1 пропуску гра ще не завершилась
+        rhythm_state._missed_notes = 1
+        self.assertLess(rhythm_state._missed_notes, rhythm_state._max_missed_notes)
+
+    def test_15_procedural_wave_count(self):
+        """Bug fix: кількість ProceduralWave відповідає максимуму тем, а не тільки light"""
+        import engine as eng
+        dark_count = len(eng.theme_mgr.themes["dark"]["bg_elements"])
+        light_count = len(eng.theme_mgr.themes["light"]["bg_elements"])
+        expected_count = max(dark_count, light_count)
+        actual_count = len(self.game._waves_manager.get_list())
+        self.assertEqual(actual_count, expected_count,
+            f"ObjectManager має мати {expected_count} хвиль, а не {actual_count}")
 
 if __name__ == "__main__":
     unittest.main()

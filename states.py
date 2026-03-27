@@ -3,6 +3,7 @@ import random
 from config import *
 from engine import GameState, Button, Slider, ConfirmationModal, ShopItemButton, loc, theme_mgr, draw_text, ObjectManager, GameObject
 from entities import Basket, Currency, Star, Particle
+from events import session_caretaker, GameMemento, event_bus, audio
 
 class MenuState(GameState):
     def __init__(self, game):
@@ -133,7 +134,9 @@ class SettingsState(GameState):
             elif self._btn_back_main.check_click(event): self._game.change_state(MenuState(self._game))
         elif self._current_view == "audio":
             self._slider_music.handle_event(event); self._slider_sfx.handle_event(event)
-            pygame.mixer.music.set_volume(self._slider_music.get_value()); self._game.sfx_volume = self._slider_sfx.get_value()
+            vol = self._slider_music.get_value()
+            audio.set_music_volume(vol)          # FACADE — single call updates both facade + pygame
+            self._game.sfx_volume = self._slider_sfx.get_value()
             if self._btn_back_sub.check_click(event): self._current_view = "main"
         elif self._current_view == "difficulty":
             settings = self._game.get_settings()
@@ -185,9 +188,30 @@ class PausedState(GameState):
         super().__init__(game); self._previous_state = previous_state; self._font = game.FONT_BIG
         self._btn_resume = Button(WIDTH//2 - 100, HEIGHT//2 - 30, 200, 60, "RESUME", "normal", game.FONT_MEDIUM)
         self._btn_menu = Button(WIDTH//2 - 100, HEIGHT//2 + 50, 200, 60, "MENU", "normal", game.FONT_MEDIUM)
+        # MEMENTO PATTERN — snapshot the current session so it can survive a restart
+        self._save_memento(previous_state)
+
+    def _save_memento(self, state):
+        """Creates and persists a GameMemento from the active game state."""
+        try:
+            if isinstance(state, PlayingState):
+                memento = GameMemento(
+                    score=state._score, combo=state._combo,
+                    missed=state._missed_stars, elapsed=0.0, mode="endless"
+                )
+                session_caretaker.save(memento)
+            elif isinstance(state, RhythmGameState):
+                memento = GameMemento(
+                    score=state._score, combo=0,
+                    missed=state._missed_notes, elapsed=state._timer,
+                    mode="rhythm", song_data=state._song_data
+                )
+                session_caretaker.save(memento)
+        except Exception:
+            pass  # saving is best-effort; never crash the game
     def handle_event(self, event):
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE) or self._btn_resume.check_click(event): pygame.mixer.music.unpause(); self._game.change_state(self._previous_state)
-        elif self._btn_menu.check_click(event): pygame.mixer.music.set_volume(0.5); self._game.change_state(MenuState(self._game))
+        elif self._btn_menu.check_click(event): audio.set_music_volume(0.5); self._game.change_state(MenuState(self._game))
     def update(self, dt):
         mouse_pos = pygame.mouse.get_pos(); self._btn_resume.update(dt, mouse_pos=mouse_pos); self._btn_menu.update(dt, mouse_pos=mouse_pos)
     def draw(self, surface):
@@ -214,12 +238,17 @@ class PlayingState(GameState):
             if obj.get_y() > HEIGHT:
                 self._star_manager.remove(obj)
                 if isinstance(obj, Star):
-                    self._missed_stars += 1; self._score = max(0, self._score - 5)
-                    if self._missed_stars >= MAX_MISSED_STARS: self._game.update_high_score(self._score); self._game.change_state(GameOverState(self._game, self._score)); return
+                    self._missed_stars += 1; self._combo = 0; self._score = max(0, self._score - 5)
+                    event_bus.notify("miss", {"missed": self._missed_stars, "score": self._score})  # OBSERVER
+                    if self._missed_stars >= MAX_MISSED_STARS:
+                        self._game.update_high_score(self._score)
+                        event_bus.notify("game_over", {"score": self._score, "mode": "endless"})  # OBSERVER
+                        self._game.change_state(GameOverState(self._game, self._score)); return
             elif obj.get_rect().colliderect(basket_rect):
-                if isinstance(obj, Currency): self._game.add_currency(1); self._game.play_catch_sound() 
+                if isinstance(obj, Currency): self._game.add_currency(1); self._game.play_catch_sound()
                 elif isinstance(obj, Star):
                     self._game.play_catch_sound(); self._score += obj.get_points() + self._combo; self._combo += 1
+                    event_bus.notify("score", {"score": self._score, "combo": self._combo})  # OBSERVER
                     if self._speed_multiplier < 5.0: self._speed_multiplier = min(self._speed_multiplier + 0.03, 5.0)
                     pos = obj.get_pos(); col = obj.get_color()
                     for _ in range(random.randint(8, 12)): self._particle_manager.add(Particle(pos[0], pos[1], col))
@@ -241,6 +270,7 @@ class RhythmGameState(GameState):
         super().__init__(game); self._basket = Basket(game); self._star_manager = ObjectManager[Star](); self._particle_manager = ObjectManager[Particle]()
         self._song_data = song_data; self._bpm = song_data["bpm"]; self._beat_interval = 60.0 / self._bpm
         self._next_beat_time = 0; self._timer = 0.0; self._speed = 5.0; self._score = 0; self._is_playing = True
+        self._missed_notes = 0; self._max_missed_notes = 5
         self._note_sequence = game.notes_data.get(song_data.get("note_id"), []); self._current_note_index = 0
         pygame.mixer.music.stop()
 
@@ -251,13 +281,21 @@ class RhythmGameState(GameState):
     def update(self, dt):
         self._basket.update(dt, keys=pygame.key.get_pressed(), speed_multiplier=1.2); self._timer += dt
         if self._timer >= self._next_beat_time: self._spawn_rhythm_note(); self._next_beat_time += self._beat_interval * 2
-        self._star_manager.update_all(dt, speed_multiplier=1.0)
+        self._star_manager.update_all(dt, speed_multiplier=1.0, speed=self._speed)
         basket_rect = self._basket.get_rect()
         for star in self._star_manager.get_list()[:]:
-            if star.get_y() > HEIGHT: self._game.update_high_score(self._score); self._game.change_state(GameOverState(self._game, self._score, self._song_data)); return
+            if star.get_y() > HEIGHT:
+                self._missed_notes += 1
+                self._star_manager.remove(star)
+                event_bus.notify("miss", {"missed": self._missed_notes, "mode": "rhythm"})  # OBSERVER
+                if self._missed_notes >= self._max_missed_notes:
+                    self._game.update_high_score(self._score)
+                    event_bus.notify("game_over", {"score": self._score, "mode": "rhythm"})  # OBSERVER
+                    self._game.change_state(GameOverState(self._game, self._score, self._song_data)); return
             elif star.get_rect().colliderect(basket_rect):
-                if star.get_note_name(): self._game.play_note_sound(star.get_note_name()) 
+                if star.get_note_name(): self._game.play_note_sound(star.get_note_name())
                 self._score += 10; pos = star.get_pos(); col = star.get_color()
+                event_bus.notify("score", {"score": self._score, "mode": "rhythm"})  # OBSERVER
                 for _ in range(10): self._particle_manager.add(Particle(pos[0], pos[1], col))
                 self._star_manager.remove(star)
         for particle in self._particle_manager.get_list()[:]:
@@ -272,3 +310,4 @@ class RhythmGameState(GameState):
     def draw(self, surface):
         self._basket.draw(surface); self._star_manager.draw_all(surface); self._particle_manager.draw_all(surface)
         draw_text(surface, f"Score: {self._score}", self._game.FONT_MEDIUM, 60, 20, color=theme_mgr.get("text_color"), align="topleft")
+        draw_text(surface, f"{loc.get('MISSED')} {self._missed_notes}/{self._max_missed_notes}", self._game.FONT_SMALL, 60, 60, color=RED_ERROR, align="topleft")
